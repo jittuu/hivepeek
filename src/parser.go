@@ -8,11 +8,10 @@ import (
 	"time"
 )
 
-func ParseEvents(f io.Reader) []*ds.Event {
-	r := csv.NewReader(f)
-	lines, err := r.ReadAll()
+func ParseEvents(f io.Reader) ([]*ds.Event, error) {
+	lines, err := csv.NewReader(f).ReadAll()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	events := make([]*ds.Event, len(lines)-1)
@@ -32,5 +31,5 @@ func ParseEvents(f io.Reader) []*ds.Event {
 		events[i] = event
 	}
 
-	return events
+	return events, nil
 }
