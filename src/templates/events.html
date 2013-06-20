@@ -1,0 +1,28 @@
+{{define "title"}}
+  Events
+{{end}}
+
+{{define "content"}}
+<table>
+  <thead>
+    <tr>
+      <th>Id</th>
+      <th>Start Time</th>
+      <th>Home</th>
+      <th>Result</th>
+      <th>Away</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{range .}}
+      <tr>
+        <td>{{ .Id }}</td>
+        <td>{{ .StartTime }}</td>
+        <td>{{ .Home }}</td>
+        <td>{{ .HGoal }} - {{ .AGoal }}</td>
+        <td>{{ .Away }}</td>
+      </tr>
+    {{end}}
+  </tbody>
+</table>
+{{end}}

@@ -4,6 +4,9 @@
 
 {{define "content"}}
   <div>
-    new upload
+    <form enctype="multipart/form-data" action="/events/create" method="post">
+      <input name="file" type="file" />
+      <button type="submit">Upload</button>
+    </form>
   </div>
 {{end}}
