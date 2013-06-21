@@ -11,6 +11,11 @@ type Event struct {
 	Id int64
 }
 
+type Team struct {
+	*ds.Team
+	Id int64
+}
+
 func Index(w http.ResponseWriter, r *http.Request) {
 	c := appengine.NewContext(r)
 
