@@ -25,12 +25,13 @@ func Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	c := appengine.NewContext(r)
-	createTeamsAndEvents(c, events)
+	createTeams(c, events)
+	createEvents(c, events)
 
 	http.Redirect(w, r, "/events/", http.StatusFound)
 }
 
-func createTeamsAndEvents(c appengine.Context, events []*ds.Event) {
+func createTeams(c appengine.Context, events []*ds.Event) {
 	teams, _, _ := ds.GetAllTeams(c)
 
 	teamExists := func(name string) bool {
@@ -55,7 +56,25 @@ func createTeamsAndEvents(c appengine.Context, events []*ds.Event) {
 			visited[e.Away] = true
 			datastore.Put(c, datastore.NewIncompleteKey(c, "Team", nil), &ds.Team{Name: e.Away, Rating: 1000, RatingHome: 1000, RatingAway: 1000})
 		}
+	}
+}
 
-		datastore.Put(c, datastore.NewIncompleteKey(c, "Event", nil), e)
+func createEvents(c appengine.Context, events []*ds.Event) {
+	existings, _, _ := ds.GetAllEvents(c)
+
+	eventExists := func(e *ds.Event) bool {
+		for _, de := range existings {
+			if de.Away == e.Away && de.Home == e.Home {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	for _, e := range events {
+		if !eventExists(e) {
+			datastore.Put(c, datastore.NewIncompleteKey(c, "Event", nil), e)
+		}
 	}
 }
