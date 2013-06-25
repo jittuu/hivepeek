@@ -17,9 +17,15 @@ type Team struct {
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
+	var s = r.FormValue("s")
+	if s == "" {
+		http.Redirect(w, r, "/events/?s=2012-2013", http.StatusFound)
+		return
+	}
+
 	c := appengine.NewContext(r)
 
-	if dst, keys, err := ds.GetAllEvents(c); err != nil {
+	if dst, keys, err := ds.GetAllEvents(c, s); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	} else {
