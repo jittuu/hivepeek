@@ -16,6 +16,7 @@ func init() {
 
 	s.HandleFunc("/", Index).Methods("GET")
 	s.HandleFunc("/new", New).Methods("GET")
+	s.HandleFunc("/calc", Calc).Methods("POST")
 	s.HandleFunc("/create", Create).Methods("POST")
 
 	http.Handle("/", r)

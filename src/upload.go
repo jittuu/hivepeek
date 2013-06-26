@@ -87,8 +87,15 @@ func createEvents(c appengine.Context, events []*ds.Event, season string) {
 
 	for _, e := range events {
 		if !eventExists(e) {
-			e.Season = season
-			datastore.Put(c, datastore.NewIncompleteKey(c, "Event", nil), e)
+			h, hk, _ := ds.GetTeam(c, e.Home)
+			a, ak, _ := ds.GetTeam(c, e.Away)
+
+			if h != nil && a != nil {
+				e.HomeId = hk.IntID()
+				e.AwayId = ak.IntID()
+				e.Season = season
+				datastore.Put(c, datastore.NewIncompleteKey(c, "Event", nil), e)
+			}
 		}
 	}
 }
