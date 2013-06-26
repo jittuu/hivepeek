@@ -18,7 +18,6 @@
 <table>
   <thead>
     <tr>
-      <th>Id</th>
       <th>Start Time</th>
       <th>Home</th>
       <th>Result</th>
@@ -28,10 +27,16 @@
   <tbody>
     {{range .}}
       <tr>
-        <td>{{ .Id }}</td>
-        <td>{{ .StartTime }}</td>
+        <td>{{ .StartTime.Format "02-01-2006" }}</td>
         <td>{{ .Home }}</td>
-        <td>{{ .HGoal }} - {{ .AGoal }}</td>
+        <td>
+          <div>
+            {{ .HGoal }} - {{ .AGoal }}
+          </div>
+          <div>
+            {{ .HRating }} - {{ .ARating }}
+          </div>
+        </td>
         <td>{{ .Away }}</td>
       </tr>
     {{end}}

@@ -32,6 +32,10 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	} else {
+		date := func(e1, e2 *Event) bool {
+			return e1.StartTime.Before(e2.StartTime)
+		}
+		By(date).Sort(events)
 		renderTemplate(w, events, "templates/events.html")
 	}
 }
@@ -158,3 +162,4 @@ type byTime []time.Time
 func (s byTime) Less(i, j int) bool { return s[i].Before(s[j]) }
 func (s byTime) Swap(i, j int)      { s[i], s[j] = s[j], s[i] }
 func (s byTime) Len() int           { return len(s) }
+
