@@ -5,7 +5,8 @@ import (
 )
 
 func init() {
-	s := peek.Router.PathPrefix("/events").Subrouter()
+	r := peek.Router.PathPrefix("/events").Subrouter()
 
-	s.HandleFunc("/new", newUpload).Methods("GET")
+	r.HandleFunc("/new", newUpload).Methods("GET")
+  r.HandleFunc("/upload", upload).Methods("POST")
 }
