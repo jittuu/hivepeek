@@ -5,6 +5,7 @@ import (
 )
 
 type Event struct {
+	League      string
 	Season      string
 	StartTime   time.Time
 	Home        string
@@ -21,14 +22,10 @@ type Event struct {
 	ARatingAway int
 }
 
-type SeasonRating struct {
+type Team struct {
+	Name    string
 	Season  string
 	Overall int
 	Home    int
 	Away    int
-}
-
-type Team struct {
-	Name    string
-	Ratings []SeasonRating
 }

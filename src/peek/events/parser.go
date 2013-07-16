@@ -1,14 +1,14 @@
-package peek
+package events
 
 import (
-	"ds"
+	"peek/ds"
 	"encoding/csv"
 	"io"
 	"strconv"
 	"time"
 )
 
-func ParseEvents(f io.Reader) ([]*ds.Event, error) {
+func parseEvents(f io.Reader) ([]*ds.Event, error) {
 	lines, err := csv.NewReader(f).ReadAll()
 	if err != nil {
 		return nil, err

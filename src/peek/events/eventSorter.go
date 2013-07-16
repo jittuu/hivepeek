@@ -1,4 +1,4 @@
-package peek
+package events
 
 import (
   "sort"
