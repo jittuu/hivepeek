@@ -2,8 +2,11 @@ package events
 
 import (
 	"appengine"
+	"github.com/gorilla/mux"
 	"net/http"
 	"peek"
+	"peek/ds"
+	"time"
 )
 
 func newUpload(w http.ResponseWriter, r *http.Request) {
@@ -36,4 +39,41 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	t.exec()
 
 	http.Redirect(w, r, "/events/?s="+season, http.StatusFound)
+}
+
+const layout = "2006-01-02"
+
+func index(w http.ResponseWriter, r *http.Request) {
+	url := "/events/epl?s=2013-2014&d=" + time.Now().Format(layout)
+	http.Redirect(w, r, url, http.StatusFound)
+	return
+}
+
+func league(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	league := vars["league"]
+	season := r.FormValue("s")
+	date, _ := time.Parse(layout, r.FormValue("d"))
+
+	c := appengine.NewContext(r)
+	start, end := weekRange(date)
+	events, _, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
+
+	gw := &GameWeek{
+		Events:      events,
+		PreviousUrl: "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, -7).Format(layout),
+		NextUrl:     "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, 7).Format(layout),
+	}
+
+	peek.RenderTemplate(w, gw, "templates/events.html")
+	return
+}
+
+func weekRange(date time.Time) (start, end time.Time) {
+	y, m, d := date.Date()
+	today := time.Date(y, m, d, 0, 0, 0, 0, date.Location())
+	days := -1 * (int(date.Weekday()) + 1)
+	start = today.AddDate(0, 0, days)
+	end = start.AddDate(0, 0, 6)
+	return
 }

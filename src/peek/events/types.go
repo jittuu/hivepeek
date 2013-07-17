@@ -1,7 +1,7 @@
 package events
 
 import (
-  "peek/ds"
+	"peek/ds"
 )
 
 type Event struct {
@@ -12,4 +12,10 @@ type Event struct {
 type Team struct {
 	*ds.Team
 	Id int64
+}
+
+type GameWeek struct {
+	Events      []*ds.Event
+	PreviousUrl string
+	NextUrl     string
 }

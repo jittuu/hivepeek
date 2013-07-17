@@ -23,9 +23,9 @@ type Event struct {
 }
 
 type Team struct {
-	Name           string
-	Season         string
-	OverallRating  int
+	Name          string
+	Season        string
+	OverallRating int
 	HomeNetRating int
 	AwayNetRating int
 }

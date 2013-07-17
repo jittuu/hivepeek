@@ -3,6 +3,7 @@ package ds
 import (
 	"appengine"
 	"appengine/datastore"
+	"time"
 )
 
 func GetTeam(c appengine.Context, name string, season string) (*Team, *datastore.Key, error) {
@@ -29,6 +30,22 @@ func GetAllEvents(c appengine.Context, league string, season string) ([]*Event, 
 		NewQuery("Event").
 		Filter("Season =", season).
 		Filter("League =", league)
+	dst := make([]*Event, 0)
+
+	if keys, err := q.GetAll(c, &dst); err != nil {
+		return nil, nil, err
+	} else {
+		return dst, keys, nil
+	}
+}
+
+func GetAllEventsByDateRange(c appengine.Context, league string, season string, start time.Time, end time.Time) ([]*Event, []*datastore.Key, error) {
+	q := datastore.
+		NewQuery("Event").
+		Filter("Season =", season).
+		Filter("League =", league).
+		Filter("StartTime >=", start).
+		Filter("StartTime <=", end)
 	dst := make([]*Event, 0)
 
 	if keys, err := q.GetAll(c, &dst); err != nil {
