@@ -36,7 +36,10 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		season:  season,
 		league:  league,
 	}
-	t.exec()
+	if err := t.exec(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	http.Redirect(w, r, "/events/?s="+season, http.StatusFound)
 }
