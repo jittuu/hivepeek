@@ -25,15 +25,23 @@ func (t *calcTask) exec() error {
 		}
 
 		e.HRating = h.OverallRating
+		e.HNetRating = h.HomeNetRating
 		e.ARating = a.OverallRating
+		e.ANetRating = a.AwayNetRating
 
 		switch {
 		case e.HGoal > e.AGoal:
-			t.transfer(h, a, 10)
+			amt := t.transfer(h, a, 10)
+			h.HomeNetRating += amt
+			a.AwayNetRating -= amt
 		case e.HGoal == e.AGoal:
-			t.transfer(a, h, 5)
+      amt := t.transfer(a, h, 5)
+			h.HomeNetRating -= amt
+			a.AwayNetRating += amt
 		case e.HGoal < e.AGoal:
-			t.transfer(a, h, 20)
+      amt := t.transfer(a, h, 20)
+			h.HomeNetRating -= amt
+			a.AwayNetRating += amt
 		}
 
 		datastore.Put(t.context, datastore.NewKey(t.context, "Event", "", e.Id, nil), e.Event)
@@ -43,11 +51,11 @@ func (t *calcTask) exec() error {
 	return nil
 }
 
-func (t *calcTask) transfer(w *Team, l *Team, percent int) {
+func (t *calcTask) transfer(w *Team, l *Team, percent int) int {
 	amt := l.OverallRating * percent / 100
 	w.OverallRating += amt
 	l.OverallRating -= amt
-	return
+	return amt
 }
 
 func (t *calcTask) getTeams(e *Event) (h, a *Team, err error) {

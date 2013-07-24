@@ -15,11 +15,9 @@ type Event struct {
 	HGoal       int
 	AGoal       int
 	HRating     int
-	HRatingHome int
-	HRatingAway int
+	HNetRating  int
 	ARating     int
-	ARatingHome int
-	ARatingAway int
+	ANetRating  int
 }
 
 type Team struct {

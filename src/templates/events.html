@@ -21,9 +21,9 @@
       <tr>
         <td>{{ .StartTime.Format "02-01-2006" }}</td>
         <td>{{ .Home }}</td>
-        <td>{{ .HRating }}</td>
+        <td>{{ .HRating }} ({{ .HNetRating }})</td>
         <td>{{ .HGoal }} - {{ .AGoal }}</td>
-        <td>{{ .ARating }}</td>
+        <td>{{ .ARating }} ({{ .ANetRating}})</td>
         <td>{{ .Away }}</td>
       </tr>
     {{end}}
