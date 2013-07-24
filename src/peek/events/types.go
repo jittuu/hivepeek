@@ -2,6 +2,7 @@ package events
 
 import (
 	"peek/ds"
+	"time"
 )
 
 type Event struct {
@@ -18,4 +19,7 @@ type GameWeek struct {
 	Events      []*ds.Event
 	PreviousUrl string
 	NextUrl     string
+	League      string
+	Season      string
+	Date        time.Time
 }

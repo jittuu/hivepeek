@@ -10,7 +10,9 @@
     <tr>
       <th>Start Time</th>
       <th>Home</th>
+      <th>H Rating</th>
       <th>Result</th>
+      <th>A Rating</th>
       <th>Away</th>
     </tr>
   </thead>
@@ -19,17 +21,20 @@
       <tr>
         <td>{{ .StartTime.Format "02-01-2006" }}</td>
         <td>{{ .Home }}</td>
-        <td>
-          <div>
-            {{ .HGoal }} - {{ .AGoal }}
-          </div>
-          <div>
-            {{ .HRating }} - {{ .ARating }}
-          </div>
-        </td>
+        <td>{{ .HRating }}</td>
+        <td>{{ .HGoal }} - {{ .AGoal }}</td>
+        <td>{{ .ARating }}</td>
         <td>{{ .Away }}</td>
       </tr>
     {{end}}
   </tbody>
 </table>
+
+<form method="post" action="/events/calc">
+  <input name="league" type="hidden" value="{{ .League }}" />
+  <input name="season" type="hidden" value="{{ .Season }}" />
+  <input name="date" type="hidden" value="{{ .Date.Format  "2006-01-02" }}" />
+  <button type="submit">Calculate</button>
+</form>
+
 {{end}}

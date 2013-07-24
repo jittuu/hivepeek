@@ -52,6 +52,39 @@ func index(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func calc(w http.ResponseWriter, r *http.Request) {
+	league := r.FormValue("league")
+	season := r.FormValue("season")
+	date, _ := time.Parse(layout, r.FormValue("date"))
+
+	start, end := weekRange(date)
+	c := appengine.NewContext(r)
+	dst, keys, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
+
+	events := make([]*Event, len(dst))
+	for i, e := range dst {
+		events[i] = &Event{
+			Event: e,
+			Id:    keys[i].IntID(),
+		}
+	}
+
+	t := &calcTask{
+		context: c,
+		events:  events,
+		season:  season,
+		league:  league,
+	}
+
+	if err := t.exec(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	url := "/events/" + league + "?s=" + season + "&d=" + date.Format(layout)
+	http.Redirect(w, r, url, http.StatusFound)
+}
+
 func league(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	league := vars["league"]
@@ -66,6 +99,9 @@ func league(w http.ResponseWriter, r *http.Request) {
 		Events:      events,
 		PreviousUrl: "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, -7).Format(layout),
 		NextUrl:     "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, 7).Format(layout),
+		League:      league,
+		Season:      season,
+		Date:        date,
 	}
 
 	peek.RenderTemplate(w, gw, "templates/events.html")

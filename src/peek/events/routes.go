@@ -10,5 +10,6 @@ func init() {
 	r.HandleFunc("/", index).Methods("GET")
 	r.HandleFunc("/new", newUpload).Methods("GET")
 	r.HandleFunc("/upload", upload).Methods("POST")
+	r.HandleFunc("/calc", calc).Methods("POST")
 	r.HandleFunc("/{league}", league).Methods("GET")
 }
