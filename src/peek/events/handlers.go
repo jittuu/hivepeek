@@ -111,7 +111,7 @@ func league(w http.ResponseWriter, r *http.Request) {
 func weekRange(date time.Time) (start, end time.Time) {
 	y, m, d := date.Date()
 	today := time.Date(y, m, d, 0, 0, 0, 0, date.Location())
-	days := -1 * (int(date.Weekday()) + 1)
+	days := (-1 * (int(date.Weekday()) + 1)) % 7
 	start = today.AddDate(0, 0, days)
 	end = start.AddDate(0, 0, 6)
 	return
