@@ -4,6 +4,10 @@ runtime: go
 api_version: go1
 
 handlers:
+- url: /assets
+  static_dir: assets
+  expiration: 30d
+
 - url: /.*
   login: required
   script: _go_app

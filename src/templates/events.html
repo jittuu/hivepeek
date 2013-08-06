@@ -3,38 +3,41 @@
 {{end}}
 
 {{define "content"}}
-<a href="{{ .PreviousUrl }}">Prev</a>
-<a href="{{ .NextUrl }}">Next</a>
-<table>
-  <thead>
-    <tr>
-      <th>Start Time</th>
-      <th>Home</th>
-      <th>H Rating</th>
-      <th>Result</th>
-      <th>A Rating</th>
-      <th>Away</th>
-    </tr>
-  </thead>
-  <tbody>
-    {{range .Events}}
+<div class="row">
+  <ul class="pager">
+    <li class="previous"><a href="{{ .PreviousUrl }}">&larr; Previous</a></li>
+    <li class="next"><a href="{{ .NextUrl }}">Next &rarr;</a></li>
+  </ul>
+  <table class="table table-bordered">
+    <thead>
       <tr>
-        <td>{{ .StartTime.Format "02-01-2006" }}</td>
-        <td>{{ .Home }}</td>
-        <td>{{ .HRating }} ({{ .HNetRating }})</td>
-        <td>{{ .HGoal }} - {{ .AGoal }}</td>
-        <td>{{ .ARating }} ({{ .ANetRating}})</td>
-        <td>{{ .Away }}</td>
+        <th>Start Time</th>
+        <th>Home</th>
+        <th>H Rating</th>
+        <th>Result</th>
+        <th>A Rating</th>
+        <th>Away</th>
       </tr>
-    {{end}}
-  </tbody>
-</table>
+    </thead>
+    <tbody>
+      {{range .Events}}
+        <tr>
+          <td>{{ .StartTime.Format "02-01-2006" }}</td>
+          <td>{{ .Home }}</td>
+          <td>{{ .HRating }} ({{ .HNetRating }})</td>
+          <td>{{ .HGoal }} - {{ .AGoal }}</td>
+          <td>{{ .ARating }} ({{ .ANetRating}})</td>
+          <td>{{ .Away }}</td>
+        </tr>
+      {{end}}
+    </tbody>
+  </table>
 
-<form method="post" action="/events/calc">
-  <input name="league" type="hidden" value="{{ .League }}" />
-  <input name="season" type="hidden" value="{{ .Season }}" />
-  <input name="date" type="hidden" value="{{ .Date.Format  "2006-01-02" }}" />
-  <button type="submit">Calculate</button>
-</form>
-
+  <form method="post" action="/events/calc">
+    <input name="league" type="hidden" value="{{ .League }}" />
+    <input name="season" type="hidden" value="{{ .Season }}" />
+    <input name="date" type="hidden" value="{{ .Date.Format  "2006-01-02" }}" />
+    <button type="submit" class="btn btn-default">Calculate</button>
+  </form>
+</div>
 {{end}}
