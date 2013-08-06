@@ -89,7 +89,15 @@ func league(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	league := vars["league"]
 	season := r.FormValue("s")
-	date, _ := time.Parse(layout, r.FormValue("d"))
+	d := r.FormValue("d")
+
+	if season == "" || d == "" {
+		url := "/events/" + league + "?s=2013-2014&d=" + time.Now().Format(layout)
+		http.Redirect(w, r, url, http.StatusFound)
+		return
+	}
+
+	date, _ := time.Parse(layout, d)
 
 	c := appengine.NewContext(r)
 	start, end := weekRange(date)
