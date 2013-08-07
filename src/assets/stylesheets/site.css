@@ -1,0 +1,19 @@
+.win {
+  background-color: #5cb85c
+}
+
+.draw {
+  background-color: #f0ad4e
+}
+
+.lose {
+  background-color: #d9534f
+}
+
+.positive {
+  color: #5cb85c
+}
+
+.negative {
+  color: #d9534f
+}

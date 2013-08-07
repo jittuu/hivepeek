@@ -11,12 +11,12 @@
   <table class="table table-bordered">
     <thead>
       <tr>
-        <th>Start Time</th>
+        <th></th>
         <th>Home</th>
-        <th>H Rating</th>
         <th>Result</th>
-        <th>A Rating</th>
         <th>Away</th>
+        <th>%</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -24,10 +24,16 @@
         <tr>
           <td>{{ .StartTime.Format "02-01-2006" }}</td>
           <td>{{ .Home }}</td>
-          <td>{{ .HRating }} ({{ .HNetRating }})</td>
           <td>{{ .HGoal }} - {{ .AGoal }}</td>
-          <td>{{ .ARating }} ({{ .ANetRating}})</td>
           <td>{{ .Away }}</td>
+          <td>
+            <span class="{{ .RatingDiffClass }}">
+              {{ printf "%+d" .RatingDiff }} %
+            </span>
+          </td>
+          <td>
+            <span class="label {{ .ResultClass }}">{{ .ResultString }}</span>
+          </td>
         </tr>
       {{end}}
     </tbody>

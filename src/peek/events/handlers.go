@@ -101,7 +101,15 @@ func league(w http.ResponseWriter, r *http.Request) {
 
 	c := appengine.NewContext(r)
 	start, end := weekRange(date)
-	events, _, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
+	dst, keys, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
+
+	events := make([]*Event, len(dst))
+	for i, e := range dst {
+		events[i] = &Event{
+			Event: e,
+			Id:    keys[i].IntID(),
+		}
+	}
 
 	gw := &GameWeek{
 		Events:      events,
