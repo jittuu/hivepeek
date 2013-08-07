@@ -8,6 +8,18 @@ handlers:
   static_dir: assets
   expiration: 30d
 
+- url: /events/new
+  login: admin
+  script: _go_app
+
+- url: /events/upload
+  login: admin
+  script: _go_app
+
+- url: /events/calc
+  login: admin
+  script: _go_app
+
 - url: /.*
   login: required
   script: _go_app
