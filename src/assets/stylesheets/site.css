@@ -17,3 +17,7 @@
 .negative {
   color: #d9534f
 }
+
+.pager li>a, .pager li>span {
+  border-radius: 5px
+}
