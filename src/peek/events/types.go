@@ -25,16 +25,16 @@ type GameWeek struct {
 }
 
 func (e *Event) RatingDiff() int {
-  if e.HRating == 0 || e.HNetRating == 0 || e.ARating == 0 || e.ANetRating == 0 {
-    return 0
-  }
+	if e.HRating == 0 || e.HNetRating == 0 || e.ARating == 0 || e.ANetRating == 0 {
+		return 0
+	}
 
 	h := float64(e.HRating) + float64(e.HNetRating)
 	a := float64(e.ARating) + float64(e.ANetRating)
 	diff := h / (h + a) * 100
-  if diff > 100 {
-    diff = 100
-  }
+	if diff > 100 {
+		diff = 100
+	}
 
 	return int(diff+0.5) - 50
 }
@@ -75,4 +75,12 @@ func (e *Event) RatingDiffClass() string {
 	}
 
 	return ""
+}
+
+func (e *Event) Calculated() bool {
+	if e.HRating != 0 || e.HNetRating != 0 || e.ARating != 0 || e.ANetRating != 0 {
+		return true
+	}
+
+	return false
 }

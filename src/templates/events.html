@@ -12,6 +12,7 @@
     <thead>
       <tr>
         <th></th>
+        <th></th>
         <th>Home</th>
         <th>Result</th>
         <th>Away</th>
@@ -22,6 +23,11 @@
     <tbody>
       {{range .Events}}
         <tr>
+          <td>
+            {{ if .Calculated }}
+              <span>&#10003;</span>
+            {{ end }}
+          </td>
           <td>{{ .StartTime.Format "02-01-2006" }}</td>
           <td>{{ .Home }}</td>
           <td>{{ .HGoal }} - {{ .AGoal }}</td>
