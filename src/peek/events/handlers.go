@@ -2,6 +2,7 @@ package events
 
 import (
 	"appengine"
+	"appengine/user"
 	"github.com/gorilla/mux"
 	"net/http"
 	"peek"
@@ -118,6 +119,7 @@ func league(w http.ResponseWriter, r *http.Request) {
 		League:      league,
 		Season:      season,
 		Date:        date,
+		IsAdmin:     user.IsAdmin(c),
 	}
 
 	peek.RenderTemplate(w, gw, "templates/events.html")

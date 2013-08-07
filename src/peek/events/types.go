@@ -22,6 +22,7 @@ type GameWeek struct {
 	League      string
 	Season      string
 	Date        time.Time
+	IsAdmin     bool
 }
 
 func (e *Event) RatingDiff() int {
