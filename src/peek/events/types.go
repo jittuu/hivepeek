@@ -25,19 +25,17 @@ type GameWeek struct {
 	IsAdmin     bool
 }
 
-func (e *Event) RatingDiff() int {
+func (e *Event) RatingDiff() float64 {
 	if e.HRating == 0 || e.HNetRating == 0 || e.ARating == 0 || e.ANetRating == 0 {
 		return 0
 	}
 
 	h := float64(e.HRating) + float64(e.HNetRating)
 	a := float64(e.ARating) + float64(e.ANetRating)
-	diff := h / (h + a) * 100
-	if diff > 100 {
-		diff = 100
-	}
-
-	return int(diff+0.5) - 50
+	hPer := h / (h + a) * 100
+	aPer := 100 - hPer
+	diff := hPer - aPer
+	return diff
 }
 
 func (e *Event) ResultString() string {
