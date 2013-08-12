@@ -86,6 +86,28 @@ func calc(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
+func resetView(w http.ResponseWriter, r *http.Request) {
+	peek.RenderTemplate(w, nil, "templates/reset.html")
+}
+
+func reset(w http.ResponseWriter, r *http.Request) {
+	league := r.FormValue("league")
+	season := r.FormValue("season")
+	t := &resetTask{
+		context: appengine.NewContext(r),
+		season:  season,
+		league:  league,
+	}
+
+	if err := t.exec(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	url := "/events/" + league + "?s=" + season + "&d=" + time.Now().Format(layout)
+	http.Redirect(w, r, url, http.StatusFound)
+}
+
 func league(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	league := vars["league"]
