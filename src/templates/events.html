@@ -18,6 +18,9 @@
         <th>Away</th>
         <th>%</th>
         <th></th>
+        <th>H</th>
+        <th>D</th>
+        <th>A</th>
       </tr>
     </thead>
     <tbody>
@@ -40,6 +43,9 @@
           <td>
             <span class="label {{ .ResultClass }}">{{ .ResultString }}</span>
           </td>
+          <td>{{ printf "%.2f" .MaxOdds.Home }}</td>
+          <td>{{ printf "%.2f" .MaxOdds.Draw }}</td>
+          <td>{{ printf "%.2f" .MaxOdds.Away }}</td>
         </tr>
       {{end}}
     </tbody>

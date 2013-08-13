@@ -75,20 +75,14 @@ func (t *uploadTask) getOrAddTeam(name string) (*Team, error) {
 }
 
 func (t *uploadTask) createEvents(teams map[string]*Team) error {
-	existings, _, _ := ds.GetAllEvents(t.context, t.league, t.season)
-
-	eventExists := func(e *ds.Event) bool {
-		for _, de := range existings {
-			if de.Away == e.Away && de.Home == e.Home {
-				return true
-			}
-		}
-
-		return false
+	oldEvents, err := t.getExistingEvents()
+	if err != nil {
+		return err
 	}
 
 	for _, e := range t.events {
-		if !eventExists(e) {
+		old := oldEvents.Find(e.Home, e.Away)
+		if old == nil {
 			h := teams[e.Home]
 			a := teams[e.Away]
 
@@ -104,8 +98,33 @@ func (t *uploadTask) createEvents(teams map[string]*Team) error {
 					return err
 				}
 			}
+		} else {
+			old.AvgOdds = e.AvgOdds
+			old.MaxOdds = e.MaxOdds
+			key := datastore.NewKey(t.context, "Event", "", old.Id, nil)
+			_, err := datastore.Put(t.context, key, old.Event)
+			if err != nil {
+				return err
+			}
 		}
 	}
 
 	return nil
+}
+
+func (t *uploadTask) getExistingEvents() (Events, error) {
+	events, keys, err := ds.GetAllEvents(t.context, t.league, t.season)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]*Event, len(events))
+	for i, e := range events {
+		result[i] = &Event{
+			Event: e,
+			Id:    keys[i].IntID(),
+		}
+	}
+
+	return result, nil
 }

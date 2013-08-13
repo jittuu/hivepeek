@@ -83,3 +83,15 @@ func (e *Event) Calculated() bool {
 
 	return false
 }
+
+type Events []*Event
+
+func (events Events) Find(home, away string) *Event {
+	for _, e := range events {
+		if e.Home == home && e.Away == away {
+			return e
+		}
+	}
+
+	return nil
+}
