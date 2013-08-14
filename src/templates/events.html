@@ -36,7 +36,9 @@
           <td>{{ .HGoal }} - {{ .AGoal }}</td>
           <td>{{ .Away }}</td>
           <td>
-            <span class="{{ .RatingDiffClass }}"title="{{ printf "(%d %+d) v (%d %+d)" .HRating .HNetRating .ARating .ANetRating }}">
+            <span 
+              class="{{ .RatingDiffClass }}"
+              title="{{ printf "(%d %+d %+d) v (%d %+d %+d)" .HRating .HNetRating .HFormRating .ARating .ANetRating .AFormRating }}">
               {{ printf "%+.2f" .RatingDiff }} %
             </span>
           </td>

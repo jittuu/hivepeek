@@ -30,8 +30,8 @@ func (e *Event) RatingDiff() float64 {
 		return 0
 	}
 
-	h := float64(e.HRating) + float64(e.HNetRating)
-	a := float64(e.ARating) + float64(e.ANetRating)
+	h := float64(e.HRating) + float64(e.HNetRating) + float64(e.HFormRating)
+	a := float64(e.ARating) + float64(e.ANetRating) + float64(e.AFormRating)
 	hPer := h / (h + a) * 100
 	aPer := 100 - hPer
 	diff := hPer - aPer
