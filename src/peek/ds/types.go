@@ -12,22 +12,22 @@ type Event struct {
 	HomeId      int64
 	Away        string
 	AwayId      int64
-	HGoal       int
-	AGoal       int
-	HRating     float64
-	HNetRating  float64
-	HFormRating float64
-	ARating     float64
-	ANetRating  float64
-	AFormRating float64
+	HGoal       int     `datastore:",noindex"`
+	AGoal       int     `datastore:",noindex"`
+	HRating     float64 `datastore:",noindex"`
+	HNetRating  float64 `datastore:",noindex"`
+	HFormRating float64 `datastore:",noindex"`
+	ARating     float64 `datastore:",noindex"`
+	ANetRating  float64 `datastore:",noindex"`
+	AFormRating float64 `datastore:",noindex"`
 	AvgOdds     MatchOdds
 	MaxOdds     MatchOdds
 }
 
 type MatchOdds struct {
-	Home float64
-	Draw float64
-	Away float64
+	Home float64 `datastore:",noindex"`
+	Draw float64 `datastore:",noindex"`
+	Away float64 `datastore:",noindex"`
 }
 
 type Team struct {
