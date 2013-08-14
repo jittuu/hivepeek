@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"peek"
 	"peek/ds"
+	"strconv"
 	"time"
 )
 
@@ -29,6 +30,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 	season := r.FormValue("season")
 	league := r.FormValue("league")
+	update, _ := strconv.ParseBool(r.FormValue("update"))
 
 	c := appengine.NewContext(r)
 	t := &uploadTask{
@@ -36,6 +38,7 @@ func upload(w http.ResponseWriter, r *http.Request) {
 		events:  events,
 		season:  season,
 		league:  league,
+		update:  update,
 	}
 	if err := t.exec(); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

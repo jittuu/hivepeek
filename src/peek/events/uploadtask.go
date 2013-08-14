@@ -11,6 +11,7 @@ type uploadTask struct {
 	events  []*ds.Event
 	season  string
 	league  string
+	update  bool
 }
 
 func (t *uploadTask) exec() error {
@@ -98,7 +99,7 @@ func (t *uploadTask) createEvents(teams map[string]*Team) error {
 					return err
 				}
 			}
-		} else {
+		} else if t.update {
 			old.AvgOdds = e.AvgOdds
 			old.MaxOdds = e.MaxOdds
 			key := datastore.NewKey(t.context, "Event", "", old.Id, nil)
