@@ -8,6 +8,10 @@ handlers:
   static_dir: assets
   expiration: 30d
 
+- url: /favicon.ico
+  static_files: assets/images/favicon.ico
+  upload: assets/images/favicon.ico
+
 - url: /events/new
   login: admin
   script: _go_app
