@@ -14,12 +14,12 @@ type Event struct {
 	AwayId      int64
 	HGoal       int
 	AGoal       int
-	HRating     int
-	HNetRating  int
-	HFormRating int
-	ARating     int
-	ANetRating  int
-	AFormRating int
+	HRating     float64
+	HNetRating  float64
+	HFormRating float64
+	ARating     float64
+	ANetRating  float64
+	AFormRating float64
 	AvgOdds     MatchOdds
 	MaxOdds     MatchOdds
 }
@@ -33,14 +33,14 @@ type MatchOdds struct {
 type Team struct {
 	Name                string
 	Season              string
-	OverallRating       int
-	HomeNetRating       int
-	AwayNetRating       int
-	LastFiveMatchRating []int
+	OverallRating       float64
+	HomeNetRating       float64
+	AwayNetRating       float64
+	LastFiveMatchRating []float64
 }
 
-func (t *Team) FormRating() int {
-	total := 0
+func (t *Team) FormRating() float64 {
+	total := 0.0
 	for _, r := range t.LastFiveMatchRating {
 		total += r
 	}
@@ -48,7 +48,7 @@ func (t *Team) FormRating() int {
 	return total
 }
 
-func (t *Team) AddRating(rating int) {
+func (t *Team) AddRating(rating float64) {
 	ratings := t.LastFiveMatchRating
 	if n := len(t.LastFiveMatchRating); n > 4 {
 		ratings = t.LastFiveMatchRating[n-4:]

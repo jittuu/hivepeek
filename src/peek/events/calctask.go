@@ -33,15 +33,15 @@ func (t *calcTask) exec() error {
 
 		switch {
 		case e.HGoal > e.AGoal:
-			amt := t.transfer(h, a, 10)
+			amt := t.transfer(h, a, 0.1)
 			h.HomeNetRating += amt
 			a.AwayNetRating -= amt
 		case e.HGoal == e.AGoal:
-			amt := t.transfer(a, h, 5)
+			amt := t.transfer(a, h, 0.05)
 			h.HomeNetRating -= amt
 			a.AwayNetRating += amt
 		case e.HGoal < e.AGoal:
-			amt := t.transfer(a, h, 20)
+			amt := t.transfer(a, h, 0.2)
 			h.HomeNetRating -= amt
 			a.AwayNetRating += amt
 		}
@@ -53,8 +53,8 @@ func (t *calcTask) exec() error {
 	return nil
 }
 
-func (t *calcTask) transfer(w *Team, l *Team, percent int) int {
-	amt := l.OverallRating * percent / 100
+func (t *calcTask) transfer(w *Team, l *Team, percent float64) float64 {
+	amt := l.OverallRating * percent
 	w.OverallRating += amt
 	l.OverallRating -= amt
 	w.AddRating(amt)
