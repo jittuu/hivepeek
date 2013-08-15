@@ -84,6 +84,10 @@ func (e *Event) Calculated() bool {
 	return false
 }
 
+func (e *Event) LayPrice(back float64) float64 {
+	return (1 / (back - 1)) + 1
+}
+
 type Events []*Event
 
 func (events Events) Find(home, away string) *Event {

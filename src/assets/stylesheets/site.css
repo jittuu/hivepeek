@@ -21,3 +21,9 @@
 .pager li>a, .pager li>span {
   border-radius: 5px
 }
+
+span.lay {
+  font-weight: bold;
+  font-size: 12px;
+  color: #f5c9c9
+}

@@ -45,7 +45,12 @@
           <td>
             <span class="label {{ .ResultClass }}">{{ .ResultString }}</span>
           </td>
-          <td>{{ printf "%.2f" .MaxOdds.Home }}</td>
+          <td>
+            {{ printf "%.2f" .MaxOdds.Home }}
+            <span class="lay">
+              {{ .LayPrice .MaxOdds.Home | printf "%.2f" }}
+            </span>
+          </td>
           <td>{{ printf "%.2f" .MaxOdds.Draw }}</td>
           <td>{{ printf "%.2f" .MaxOdds.Away }}</td>
         </tr>
