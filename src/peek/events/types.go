@@ -26,12 +26,12 @@ type GameWeek struct {
 }
 
 func (e *Event) RatingDiff() float64 {
-	if e.HRating == 0 || e.HNetRating == 0 || e.ARating == 0 || e.ANetRating == 0 {
-		return 0
+	if !e.Calculated() {
+		return 0.0
 	}
 
-	h := e.HRating + e.HNetRating + e.HFormRating
-	a := e.ARating + e.ANetRating + e.AFormRating
+	h := e.HRating + ((e.HNetRating + e.HFormRating) / 2)
+	a := e.ARating + ((e.ANetRating + e.AFormRating) / 2)
 	hPer := h / (h + a) * 100
 	aPer := 100 - hPer
 	diff := hPer - aPer

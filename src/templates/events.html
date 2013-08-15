@@ -38,7 +38,7 @@
           <td>
             <span 
               class="{{ .RatingDiffClass }}"
-              title="{{ printf "(%.2f %+.2f %+.2f) v (%.2f %+.2f %+.2f)" .HRating .HNetRating .HFormRating .ARating .ANetRating .AFormRating }}">
+              title="{{ printf "(%.2f, %+.2f, %+.2f) v (%.2f, %+.2f, %+.2f)" .HRating .HNetRating .HFormRating .ARating .ANetRating .AFormRating }}">
               {{ printf "%+.2f" .RatingDiff }} %
             </span>
           </td>
