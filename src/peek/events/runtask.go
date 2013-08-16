@@ -27,6 +27,12 @@ type MonthResult struct {
 	Date   time.Time
 	Bets   int
 	Profit float64
+	Events []*EventResult
+}
+
+type EventResult struct {
+	*Event
+	Profit float64
 }
 
 func (t *runTask) exec() (MonthResults, error) {
@@ -58,6 +64,7 @@ func (t *runTask) exec() (MonthResults, error) {
 			if profit := t.evalEvent(e); profit != 0 {
 				result.Bets += 1
 				result.Profit += profit
+				result.Events = append(result.Events, &EventResult{Event: e, Profit: profit})
 			}
 		}
 
@@ -86,7 +93,7 @@ func (t *runTask) evalEvent(e *Event) float64 {
 			// have bet
 			if e.HGoal > e.AGoal {
 				fmt.Fprintln(t.w, "WON")
-				return betAmt * e.MaxOdds.Home
+				return betAmt * (e.MaxOdds.Home - 1)
 			} else {
 				fmt.Fprintln(t.w, "LOST")
 				return betAmt * -1
@@ -103,7 +110,7 @@ func (t *runTask) evalEvent(e *Event) float64 {
 				return betAmt * -1
 			} else {
 				fmt.Fprintln(t.w, "WON")
-				return betAmt * lay
+				return betAmt * (lay - 1)
 			}
 		}
 	}
@@ -145,4 +152,8 @@ func (months MonthResults) Profit() (bets int, profit float64) {
 
 func (mr *MonthResult) Won() bool {
 	return mr.Profit > 0
+}
+
+func (er *EventResult) Won() bool {
+	return er.Profit > 0
 }

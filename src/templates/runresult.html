@@ -46,5 +46,49 @@
       {{end}}
     </tbody>
   </table>
+
+  {{range .Results}}
+  <h3>{{ .Date.Format "Jan-2006" }} <span class="badge"> {{ .Bets }}</span></h3>
+  <table class="table table-bordered">
+    <thead>
+        <th>Home</th>
+        <th>Result</th>
+        <th>Away</th>
+        <th>%</th>
+        <th>H</th>
+        <th>Profit</th>
+    </thead>
+    <tbody>
+      {{range .Events}}
+      <tr>
+        <td>{{ .Home }}</td>
+        <td>{{ .HGoal }} - {{ .AGoal }}</td>
+        <td>{{ .Away }}</td>
+        <td>
+          <span
+            class="{{ .RatingDiffClass }}"
+            title="{{ printf "(%.2f, %+.2f, %+.2f) v (%.2f, %+.2f, %+.2f)" .HRating .HNetRating .HFormRating .ARating .ANetRating .AFormRating }}">
+            {{ printf "%+.2f" .RatingDiff }} %
+          </span>
+        </td>
+        <td>
+          {{ printf "%.2f" .MaxOdds.Home }}
+          <span class="lay">
+            {{ .LayPrice .MaxOdds.Home | printf "%.2f" }}
+          </span>
+        </td>
+        <td>
+          {{ if .Won }}
+          <span class="positive">
+          {{ else }}
+          <span class="negative">
+          {{ end }}
+          {{ printf "%+.2f" .Profit }}
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+  {{end}}
 </div>
 {{end}}
