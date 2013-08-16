@@ -99,3 +99,13 @@ func (events Events) Find(home, away string) *Event {
 
 	return nil
 }
+
+type RunTaskResult struct {
+	Profit  float64
+	Bets    int
+	Results MonthResults
+}
+
+func (r *RunTaskResult) Won() bool {
+	return r.Profit > 0
+}

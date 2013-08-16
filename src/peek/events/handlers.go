@@ -4,6 +4,7 @@ import (
 	"appengine"
 	"appengine/user"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"net/http"
 	"peek"
 	"peek/ds"
@@ -109,6 +110,39 @@ func reset(w http.ResponseWriter, r *http.Request) {
 
 	url := "/events/" + league + "?s=" + season + "&d=" + time.Now().Format(layout)
 	http.Redirect(w, r, url, http.StatusFound)
+}
+
+func runView(w http.ResponseWriter, r *http.Request) {
+	peek.RenderTemplate(w, nil, "templates/run.html")
+}
+
+func run(w http.ResponseWriter, r *http.Request) {
+	league := r.FormValue("league")
+	season := r.FormValue("season")
+	diff, _ := strconv.ParseFloat(r.FormValue("diff"), 64)
+	min, _ := strconv.ParseFloat(r.FormValue("min"), 64)
+	max, _ := strconv.ParseFloat(r.FormValue("max"), 64)
+
+	t := &runTask{
+		context:  appengine.NewContext(r),
+		w:        ioutil.Discard,
+		season:   season,
+		league:   league,
+		diff:     diff,
+		minPrice: min,
+		maxPrice: max,
+	}
+
+	result, err := t.exec()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	vm := &RunTaskResult{Results: result}
+
+	vm.Bets, vm.Profit = result.Profit()
+	peek.RenderTemplate(w, vm, "templates/runresult.html")
 }
 
 func league(w http.ResponseWriter, r *http.Request) {

@@ -1,0 +1,50 @@
+{{define "title"}}
+  Test Run
+{{end}}
+
+{{define "content"}}
+<div class="row">
+  <p class="lead">
+    <span> You have</span>
+    <span>
+      {{ if .Won }}
+        won <span class="positive">{{ printf "%+.2f" .Profit }}</span>
+      {{ else }}
+        lost <span class="negative">{{ printf "%+.2f" .Profit }}</span>
+      {{ end }}
+    </span>
+    <span>for<span>
+    <span class="badge">
+      {{ .Bets  }}
+    </span>
+    <span> bets <span>
+  </p>
+  <a href="/events/run">Calculate another</a>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Month</th>
+        <th>Total Bets</th>
+        <th>Profit</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .Results}}
+      <tr>
+        <td>{{ .Date.Format "Jan-2006" }}</td>
+        <td>{{ .Bets }}</td>
+        <td>
+          {{ if .Won }}
+          <span class="positive">
+          {{ else }}
+          <span class="negative">
+          {{ end }}
+          {{ printf "%+.2f" .Profit }}
+          </span>
+        </td>
+      </tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+{{end}}

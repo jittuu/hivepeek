@@ -13,5 +13,7 @@ func init() {
 	r.HandleFunc("/calc", calc).Methods("POST")
 	r.HandleFunc("/reset", resetView).Methods("GET")
 	r.HandleFunc("/reset", reset).Methods("POST")
+	r.HandleFunc("/run", runView).Methods("GET")
+	r.HandleFunc("/run", run).Methods("POST")
 	r.HandleFunc("/{league}", league).Methods("GET")
 }
