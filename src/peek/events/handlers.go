@@ -12,11 +12,11 @@ import (
 	"time"
 )
 
-func newUpload(w http.ResponseWriter, r *http.Request) {
+func newUpload(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, nil, "templates/upload.html")
 }
 
-func upload(w http.ResponseWriter, r *http.Request) {
+func upload(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	f, _, err := r.FormFile("file")
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -33,7 +33,6 @@ func upload(w http.ResponseWriter, r *http.Request) {
 	league := r.FormValue("league")
 	update, _ := strconv.ParseBool(r.FormValue("update"))
 
-	c := appengine.NewContext(r)
 	t := &uploadTask{
 		context: c,
 		events:  events,
@@ -51,19 +50,18 @@ func upload(w http.ResponseWriter, r *http.Request) {
 
 const layout = "2006-01-02"
 
-func index(w http.ResponseWriter, r *http.Request) {
+func index(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	url := "/events/epl?s=2013-2014&d=" + time.Now().Format(layout)
 	http.Redirect(w, r, url, http.StatusFound)
 	return
 }
 
-func calc(w http.ResponseWriter, r *http.Request) {
+func calc(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	league := r.FormValue("league")
 	season := r.FormValue("season")
 	date, _ := time.Parse(layout, r.FormValue("date"))
 
 	start, end := weekRange(date)
-	c := appengine.NewContext(r)
 	dst, keys, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
 
 	events := make([]*Event, len(dst))
@@ -90,15 +88,15 @@ func calc(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
-func resetView(w http.ResponseWriter, r *http.Request) {
+func resetView(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, nil, "templates/reset.html")
 }
 
-func reset(w http.ResponseWriter, r *http.Request) {
+func reset(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	league := r.FormValue("league")
 	season := r.FormValue("season")
 	t := &resetTask{
-		context: appengine.NewContext(r),
+		context: c,
 		season:  season,
 		league:  league,
 	}
@@ -112,11 +110,11 @@ func reset(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
-func runView(w http.ResponseWriter, r *http.Request) {
+func runView(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, nil, "templates/run.html")
 }
 
-func run(w http.ResponseWriter, r *http.Request) {
+func run(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	league := r.FormValue("league")
 	season := r.FormValue("season")
 	diff, _ := strconv.ParseFloat(r.FormValue("diff"), 64)
@@ -124,7 +122,7 @@ func run(w http.ResponseWriter, r *http.Request) {
 	max, _ := strconv.ParseFloat(r.FormValue("max"), 64)
 
 	t := &runTask{
-		context:  appengine.NewContext(r),
+		context:  c,
 		w:        ioutil.Discard,
 		season:   season,
 		league:   league,
@@ -145,7 +143,7 @@ func run(w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, vm, "templates/runresult.html")
 }
 
-func league(w http.ResponseWriter, r *http.Request) {
+func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	league := vars["league"]
 	season := r.FormValue("s")
@@ -159,7 +157,6 @@ func league(w http.ResponseWriter, r *http.Request) {
 
 	date, _ := time.Parse(layout, d)
 
-	c := appengine.NewContext(r)
 	start, end := weekRange(date)
 	dst, keys, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
 

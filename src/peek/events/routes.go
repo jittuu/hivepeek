@@ -2,18 +2,19 @@ package events
 
 import (
 	"peek"
+	"github.com/mjibson/appstats"
 )
 
 func init() {
 	r := peek.Router.PathPrefix("/events").Subrouter()
 
-	r.HandleFunc("/", index).Methods("GET")
-	r.HandleFunc("/new", newUpload).Methods("GET")
-	r.HandleFunc("/upload", upload).Methods("POST")
-	r.HandleFunc("/calc", calc).Methods("POST")
-	r.HandleFunc("/reset", resetView).Methods("GET")
-	r.HandleFunc("/reset", reset).Methods("POST")
-	r.HandleFunc("/run", runView).Methods("GET")
-	r.HandleFunc("/run", run).Methods("POST")
-	r.HandleFunc("/{league}", league).Methods("GET")
+	r.Handle("/", appstats.NewHandler(index)).Methods("GET")
+	r.Handle("/new", appstats.NewHandler(newUpload)).Methods("GET")
+	r.Handle("/upload", appstats.NewHandler(upload)).Methods("POST")
+	r.Handle("/calc", appstats.NewHandler(calc)).Methods("POST")
+	r.Handle("/reset", appstats.NewHandler(resetView)).Methods("GET")
+	r.Handle("/reset", appstats.NewHandler(reset)).Methods("POST")
+	r.Handle("/run", appstats.NewHandler(runView)).Methods("GET")
+	r.Handle("/run", appstats.NewHandler(run)).Methods("POST")
+	r.Handle("/{league}", appstats.NewHandler(league)).Methods("GET")
 }
