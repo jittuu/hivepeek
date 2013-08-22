@@ -3,6 +3,8 @@ package events
 import (
 	"appengine"
 	"appengine/datastore"
+	"errors"
+	"fmt"
 	"peek/ds"
 )
 
@@ -81,36 +83,53 @@ func (t *uploadTask) createEvents(teams map[string]*Team) error {
 		return err
 	}
 
+	ch := make(chan error)
 	for _, e := range t.events {
 		old := oldEvents.Find(e.Home, e.Away)
-		if old == nil {
-			h := teams[e.Home]
-			a := teams[e.Away]
+		t.createOrUpdateEvent(old, e, teams, ch)
+	}
 
-			if h != nil && a != nil {
-				e.HomeId = h.Id
-				e.AwayId = a.Id
-				e.Season = t.season
-				e.League = t.league
-				_, err := datastore.Put(
-					t.context,
-					datastore.NewIncompleteKey(t.context, "Event", nil), e)
-				if err != nil {
-					return err
-				}
-			}
-		} else if t.update {
-			old.AvgOdds = e.AvgOdds
-			old.MaxOdds = e.MaxOdds
-			key := datastore.NewKey(t.context, "Event", "", old.Id, nil)
-			_, err := datastore.Put(t.context, key, old.Event)
-			if err != nil {
-				return err
-			}
+	errorCount := 0
+	for i := 0; i < len(t.events); i++ {
+		err = <-ch
+		if err != nil {
+			errorCount++
 		}
 	}
 
+	if errorCount > 0 {
+		return errors.New(fmt.Sprintf("there are %d errors when saving %d events", errorCount, len(t.events)))
+	}
+
 	return nil
+}
+
+func (t *uploadTask) createOrUpdateEvent(old *Event, e *ds.Event, teams map[string]*Team, ch chan<- error) {
+	if old == nil {
+		h := teams[e.Home]
+		a := teams[e.Away]
+
+		if h != nil && a != nil {
+			e.HomeId = h.Id
+			e.AwayId = a.Id
+			e.Season = t.season
+			e.League = t.league
+			go func() {
+				_, err := datastore.Put(
+					t.context,
+					datastore.NewIncompleteKey(t.context, "Event", nil), e)
+				ch <- err
+			}()
+		}
+	} else if t.update {
+		old.AvgOdds = e.AvgOdds
+		old.MaxOdds = e.MaxOdds
+		key := datastore.NewKey(t.context, "Event", "", old.Id, nil)
+		go func() {
+			_, err := datastore.Put(t.context, key, old.Event)
+			ch <- err
+		}()
+	}
 }
 
 func (t *uploadTask) getExistingEvents() (Events, error) {
