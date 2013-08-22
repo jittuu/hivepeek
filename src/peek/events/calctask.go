@@ -15,41 +15,63 @@ type calcTask struct {
 
 func (t *calcTask) exec() error {
 	for _, e := range t.events {
-		if e.HRating > 0 || e.ARating > 0 {
-			continue
-		}
-
-		h, a, err := t.getTeams(e)
+		err := t.execEvent(e)
 		if err != nil {
 			return err
 		}
-
-		e.HRating = h.OverallRating
-		e.HNetRating = h.HomeNetRating
-		e.HFormRating = h.FormRating()
-		e.ARating = a.OverallRating
-		e.ANetRating = a.AwayNetRating
-		e.AFormRating = a.FormRating()
-
-		switch {
-		case e.HGoal > e.AGoal:
-			amt := t.transfer(h, a, 0.1)
-			h.HomeNetRating += amt
-			a.AwayNetRating -= amt
-		case e.HGoal == e.AGoal:
-			amt := t.transfer(a, h, 0.05)
-			h.HomeNetRating -= amt
-			a.AwayNetRating += amt
-		case e.HGoal < e.AGoal:
-			amt := t.transfer(a, h, 0.2)
-			h.HomeNetRating -= amt
-			a.AwayNetRating += amt
-		}
-
-		datastore.Put(t.context, datastore.NewKey(t.context, "Event", "", e.Id, nil), e.Event)
-		datastore.Put(t.context, datastore.NewKey(t.context, "Team", "", h.Id, nil), h.Team)
-		datastore.Put(t.context, datastore.NewKey(t.context, "Team", "", a.Id, nil), a.Team)
 	}
+	return nil
+}
+
+func (t *calcTask) execEvent(e *Event) error {
+	if e.Calculated() {
+		return nil
+	}
+
+	h, a, err := t.getTeams(e)
+	if err != nil {
+		return err
+	}
+
+	e.HRating = h.OverallRating
+	e.HNetRating = h.HomeNetRating
+	e.HFormRating = h.FormRating()
+	e.ARating = a.OverallRating
+	e.ANetRating = a.AwayNetRating
+	e.AFormRating = a.FormRating()
+
+	switch {
+	case e.HGoal > e.AGoal:
+		amt := t.transfer(h, a, 0.1)
+		h.HomeNetRating += amt
+		a.AwayNetRating -= amt
+	case e.HGoal == e.AGoal:
+		amt := t.transfer(a, h, 0.05)
+		h.HomeNetRating -= amt
+		a.AwayNetRating += amt
+	case e.HGoal < e.AGoal:
+		amt := t.transfer(a, h, 0.2)
+		h.HomeNetRating -= amt
+		a.AwayNetRating += amt
+	}
+
+	ch := make(chan bool)
+	go func() {
+		datastore.Put(t.context, datastore.NewKey(t.context, "Event", "", e.Id, nil), e.Event)
+		ch <- true
+	}()
+	go func() {
+		datastore.Put(t.context, datastore.NewKey(t.context, "Team", "", h.Id, nil), h.Team)
+		ch <- true
+	}()
+	go func() {
+		datastore.Put(t.context, datastore.NewKey(t.context, "Team", "", a.Id, nil), a.Team)
+		ch <- true
+	}()
+
+	<-ch
+	<-ch
+	<-ch
 	return nil
 }
 
@@ -63,17 +85,30 @@ func (t *calcTask) transfer(w *Team, l *Team, percent float64) float64 {
 }
 
 func (t *calcTask) getTeams(e *Event) (h, a *Team, err error) {
-	dsH := &ds.Team{}
-	dsA := &ds.Team{}
-	err = datastore.Get(
-		t.context,
-		datastore.NewKey(t.context, "Team", "", e.HomeId, nil),
-		dsH)
+	ch := make(chan error)
 
-	err = datastore.Get(
-		t.context,
-		datastore.NewKey(t.context, "Team", "", e.AwayId, nil),
-		dsA)
+	dsH := &ds.Team{}
+	go func() {
+		errH := datastore.Get(
+			t.context,
+			datastore.NewKey(t.context, "Team", "", e.HomeId, nil),
+			dsH)
+		ch <- errH
+	}()
+
+	dsA := &ds.Team{}
+	go func() {
+		errA := datastore.Get(
+			t.context,
+			datastore.NewKey(t.context, "Team", "", e.AwayId, nil),
+			dsA)
+		ch <- errA
+	}()
+
+	err = <-ch
+	if err2 := <-ch; err2 != nil {
+		err = err2
+	}
 
 	return &Team{Team: dsH, Id: e.HomeId}, &Team{Team: dsA, Id: e.AwayId}, err
 }
