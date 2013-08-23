@@ -2,7 +2,11 @@ package events
 
 import (
 	"appengine"
+	"appengine/memcache"
 	"appengine/user"
+	"bytes"
+	"encoding/gob"
+	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
@@ -61,16 +65,7 @@ func calc(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	season := r.FormValue("season")
 	date, _ := time.Parse(layout, r.FormValue("date"))
 
-	start, end := weekRange(date)
-	dst, keys, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
-
-	events := make([]*Event, len(dst))
-	for i, e := range dst {
-		events[i] = &Event{
-			Event: e,
-			Id:    keys[i].IntID(),
-		}
-	}
+	events, _ := getEventsByWeek(c, league, season, date)
 
 	t := &calcTask{
 		context: c,
@@ -80,6 +75,12 @@ func calc(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := t.exec(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	key := fmt.Sprintf("%s-%s-%s", league, season, date.Format(layout))
+	if err := setEventsToCache(c, key, events); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -102,6 +103,11 @@ func reset(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := t.exec(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if err := memcache.Flush(c); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -156,17 +162,7 @@ func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	date, _ := time.Parse(layout, d)
-
-	start, end := weekRange(date)
-	dst, keys, _ := ds.GetAllEventsByDateRange(c, league, season, start, end)
-
-	events := make([]*Event, len(dst))
-	for i, e := range dst {
-		events[i] = &Event{
-			Event: e,
-			Id:    keys[i].IntID(),
-		}
-	}
+	events, _ := getEventsByWeek(c, league, season, date)
 
 	gw := &GameWeek{
 		Events:      events,
@@ -180,6 +176,67 @@ func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 
 	peek.RenderTemplate(w, gw, "templates/events.html")
 	return
+}
+
+func getEventsByWeek(c appengine.Context, league, season string, date time.Time) ([]*Event, error) {
+	key := fmt.Sprintf("%s-%s-%s", league, season, date.Format(layout))
+	cached, err := memcache.Get(c, key)
+	if err != nil && err != memcache.ErrCacheMiss {
+		return nil, err
+	}
+
+	if err == nil {
+		// cache hit
+		var b bytes.Buffer
+		b.Write(cached.Value)
+		dec := gob.NewDecoder(&b)
+		events := make([]*Event, 0)
+		if err = dec.Decode(&events); err != nil {
+			return nil, err
+		}
+
+		return events, nil
+	} else {
+		// cache miss
+		start, end := weekRange(date)
+		dst, keys, err := ds.GetAllEventsByDateRange(c, league, season, start, end)
+
+		if err != nil {
+			return nil, err
+		}
+
+		events := make([]*Event, len(dst))
+		for i, e := range dst {
+			events[i] = &Event{
+				Event: e,
+				Id:    keys[i].IntID(),
+			}
+		}
+		if err = setEventsToCache(c, key, events); err != nil {
+			return nil, err
+		}
+
+		return events, nil
+	}
+}
+
+func setEventsToCache(c appengine.Context, key string, events []*Event) error {
+	var b bytes.Buffer
+	enc := gob.NewEncoder(&b)
+	err := enc.Encode(events)
+	if err != nil {
+		return err
+	}
+
+	item := &memcache.Item{
+		Key:   key,
+		Value: b.Bytes(),
+	}
+	if err = memcache.Set(c, item); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func weekRange(date time.Time) (start, end time.Time) {
