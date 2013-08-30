@@ -49,14 +49,49 @@ func upload(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, "/events/?s="+season, http.StatusFound)
+	url := "/events/" + league + "?s=" + season
+	http.Redirect(w, r, url, http.StatusFound)
 }
 
 const layout = "2006-01-02"
 
 func index(c appengine.Context, w http.ResponseWriter, r *http.Request) {
-	url := "/events/epl?s=2013-2014&d=" + time.Now().Format(layout)
+	now := time.Now()
+	url := "/events/epl?s=" + getSeason(now) + "&d=" + now.Format(layout)
 	http.Redirect(w, r, url, http.StatusFound)
+	return
+}
+
+func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	league := vars["league"]
+	season := r.FormValue("s")
+	d := r.FormValue("d")
+
+	if season == "" || d == "" {
+		now := time.Now()
+		if season == "" {
+			season = getSeason(now)
+		}
+		url := "/events/" + league + "?s=" + season + "&d=" + now.Format(layout)
+		http.Redirect(w, r, url, http.StatusFound)
+		return
+	}
+
+	date, _ := time.Parse(layout, d)
+	events, _ := getEventsByWeek(c, league, season, date)
+
+	gw := &GameWeek{
+		Events:      events,
+		PreviousUrl: "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, -7).Format(layout),
+		NextUrl:     "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, 7).Format(layout),
+		League:      league,
+		Season:      season,
+		Date:        date,
+		IsAdmin:     user.IsAdmin(c),
+	}
+
+	peek.RenderTemplate(w, gw, "templates/events.html")
 	return
 }
 
@@ -149,35 +184,6 @@ func run(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, vm, "templates/runresult.html")
 }
 
-func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	league := vars["league"]
-	season := r.FormValue("s")
-	d := r.FormValue("d")
-
-	if season == "" || d == "" {
-		url := "/events/" + league + "?s=2013-2014&d=" + time.Now().Format(layout)
-		http.Redirect(w, r, url, http.StatusFound)
-		return
-	}
-
-	date, _ := time.Parse(layout, d)
-	events, _ := getEventsByWeek(c, league, season, date)
-
-	gw := &GameWeek{
-		Events:      events,
-		PreviousUrl: "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, -7).Format(layout),
-		NextUrl:     "/events/" + league + "?s=" + season + "&d=" + date.AddDate(0, 0, 7).Format(layout),
-		League:      league,
-		Season:      season,
-		Date:        date,
-		IsAdmin:     user.IsAdmin(c),
-	}
-
-	peek.RenderTemplate(w, gw, "templates/events.html")
-	return
-}
-
 func getEventsByWeek(c appengine.Context, league, season string, date time.Time) ([]*Event, error) {
 	key := fmt.Sprintf("%s-%s-%s", league, season, date.Format(layout))
 	cached, err := memcache.Get(c, key)
@@ -246,4 +252,16 @@ func weekRange(date time.Time) (start, end time.Time) {
 	start = today.AddDate(0, 0, days)
 	end = start.AddDate(0, 0, 6)
 	return
+}
+
+func getSeason(date time.Time) string {
+	y, m, _ := date.Date()
+	start, end := y, y
+	if m > 7 {
+		end++
+	} else {
+		start--
+	}
+
+	return fmt.Sprintf("%d-%d", start, end)
 }
