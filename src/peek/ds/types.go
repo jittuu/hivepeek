@@ -5,23 +5,29 @@ import (
 )
 
 type Event struct {
-	League      string
-	Season      string
-	StartTime   time.Time
-	Home        string
-	HomeId      int64
-	Away        string
-	AwayId      int64
-	HGoal       int     `datastore:",noindex"`
-	AGoal       int     `datastore:",noindex"`
-	HRating     float64 `datastore:",noindex"`
-	HNetRating  float64 `datastore:",noindex"`
-	HFormRating float64 `datastore:",noindex"`
-	ARating     float64 `datastore:",noindex"`
-	ANetRating  float64 `datastore:",noindex"`
-	AFormRating float64 `datastore:",noindex"`
-	AvgOdds     MatchOdds
-	MaxOdds     MatchOdds
+	League         string
+	Season         string
+	StartTime      time.Time
+	Home           string
+	HomeId         int64
+	Away           string
+	AwayId         int64
+	HGoal          int     `datastore:",noindex"`
+	AGoal          int     `datastore:",noindex"`
+	HRating        float64 `datastore:",noindex"`
+	HRatingLen     int     `datastore:",noindex"`
+	HNetRating     float64 `datastore:",noindex"`
+	HNetRatingLen  int     `datastore:",noindex"`
+	HFormRating    float64 `datastore:",noindex"`
+	HFormRatingLen int     `datastore:",noindex"`
+	ARating        float64 `datastore:",noindex"`
+	ARatingLen     int     `datastore:",noindex"`
+	ANetRating     float64 `datastore:",noindex"`
+	ANetRatingLen  int     `datastore:",noindex"`
+	AFormRating    float64 `datastore:",noindex"`
+	AFormRatingLen int
+	AvgOdds        MatchOdds
+	MaxOdds        MatchOdds
 }
 
 type MatchOdds struct {
@@ -34,8 +40,11 @@ type Team struct {
 	Name                string
 	Season              string
 	OverallRating       float64
+	OverallRatingLen    int
 	HomeNetRating       float64
+	HomeNetRatingLen    int
 	AwayNetRating       float64
+	AwayNetRatingLen    int
 	LastFiveMatchRating []float64
 }
 

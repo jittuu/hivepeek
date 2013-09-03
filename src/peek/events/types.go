@@ -84,6 +84,10 @@ func (e *Event) Calculated() bool {
 	return false
 }
 
+func (e *Event) HasEnoughRating() bool {
+	return e.HFormRatingLen == 5 && e.AFormRatingLen == 5
+}
+
 func (e *Event) LayPrice(back float64) float64 {
 	return (1 / (back - 1)) + 1
 }

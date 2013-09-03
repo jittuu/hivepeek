@@ -34,11 +34,17 @@ func (t *calcTask) execEvent(e *Event) error {
 	}
 
 	e.HRating = h.OverallRating
+	e.HRatingLen = h.OverallRatingLen
 	e.HNetRating = h.HomeNetRating
+	e.HNetRatingLen = h.HomeNetRatingLen
 	e.HFormRating = h.FormRating()
+	e.HFormRatingLen = len(h.LastFiveMatchRating)
 	e.ARating = a.OverallRating
+	e.ARatingLen = a.OverallRatingLen
 	e.ANetRating = a.AwayNetRating
+	e.ANetRatingLen = a.AwayNetRatingLen
 	e.AFormRating = a.FormRating()
+	e.AFormRatingLen = len(a.LastFiveMatchRating)
 
 	switch {
 	case e.HGoal > e.AGoal:
@@ -54,6 +60,11 @@ func (t *calcTask) execEvent(e *Event) error {
 		h.HomeNetRating -= amt
 		a.AwayNetRating += amt
 	}
+
+	h.OverallRatingLen += 1
+	h.HomeNetRatingLen += 1
+	a.OverallRatingLen += 1
+	a.AwayNetRatingLen += 1
 
 	ch := make(chan bool)
 	go func() {

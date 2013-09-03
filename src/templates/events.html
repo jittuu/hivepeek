@@ -36,13 +36,26 @@
         <tr>
           <td>
             {{ if .Calculated }}
-              <span>&#10003;</span>
+              <span title="calculated">&check;</span>
+            {{ end }}
+            {{ if not .HasEnoughRating }}
+              <span title="warning: not enough form rating">&excl;</span>
             {{ end }}
           </td>
           <td>{{ .StartTime.Format "02-01-2006" }}</td>
-          <td>{{ .Home }}</td>
+          <td>
+            <span
+              title="{{ printf "%d %d/%d" .HFormRatingLen .HNetRatingLen .HRatingLen }}">
+              {{ .Home }}
+            </span>
+          </td>
           <td>{{ .HGoal }} - {{ .AGoal }}</td>
-          <td>{{ .Away }}</td>
+          <td>
+            <span
+              title="{{ printf "%d %d/%d" .AFormRatingLen .ANetRatingLen .ARatingLen }}">
+              {{ .Away }}
+            </span>
+          </td>
           <td>
             <span 
               class="{{ .RatingDiffClass }}"

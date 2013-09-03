@@ -52,8 +52,11 @@ func (t *resetTask) resetTeam(teamId int64) error {
 	}
 
 	team.OverallRating = 1000
+	team.OverallRatingLen = 0
 	team.HomeNetRating = 0
+	team.HomeNetRatingLen = 0
 	team.AwayNetRating = 0
+	team.AwayNetRatingLen = 0
 
 	_, err = datastore.Put(t.context, key, team)
 	return err
@@ -61,9 +64,18 @@ func (t *resetTask) resetTeam(teamId int64) error {
 
 func (t *resetTask) resetEvent(e *ds.Event, key *datastore.Key) error {
 	e.HRating = 0
+	e.HRatingLen = 0
 	e.HNetRating = 0
+	e.HNetRatingLen = 0
+	e.HFormRating = 0
+	e.HFormRatingLen = 0
+
 	e.ARating = 0
+	e.ARatingLen = 0
 	e.ANetRating = 0
+	e.ANetRatingLen = 0
+	e.AFormRating = 0
+	e.AFormRatingLen = 0
 
 	_, err := datastore.Put(t.context, key, e)
 
