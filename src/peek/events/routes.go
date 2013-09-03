@@ -1,8 +1,8 @@
 package events
 
 import (
-	"peek"
 	"github.com/mjibson/appstats"
+	"peek"
 )
 
 func init() {
@@ -11,6 +11,7 @@ func init() {
 	r.Handle("/", appstats.NewHandler(index)).Methods("GET")
 	r.Handle("/new", appstats.NewHandler(newUpload)).Methods("GET")
 	r.Handle("/upload", appstats.NewHandler(upload)).Methods("POST")
+	r.Handle("/calc", appstats.NewHandler(calcView)).Methods("GET")
 	r.Handle("/calc", appstats.NewHandler(calc)).Methods("POST")
 	r.Handle("/reset", appstats.NewHandler(resetView)).Methods("GET")
 	r.Handle("/reset", appstats.NewHandler(reset)).Methods("POST")

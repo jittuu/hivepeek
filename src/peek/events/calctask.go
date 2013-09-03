@@ -8,14 +8,42 @@ import (
 
 type calcTask struct {
 	context appengine.Context
-	events  []*Event
 	season  string
 	league  string
 }
 
+func (t *calcTask) getAllEvents() ([]*Event, error) {
+	dst, keys, err := ds.GetAllEvents(t.context, t.league, t.season)
+	if err != nil {
+		return nil, err
+	}
+
+	events := make([]*Event, len(dst))
+	for i, e := range dst {
+		events[i] = &Event{
+			Event: e,
+			Id:    keys[i].IntID(),
+		}
+	}
+
+	startTime := func(e1, e2 *Event) bool {
+		return e1.StartTime.Before(e2.StartTime)
+	}
+
+	By(startTime).Sort(events)
+
+	return events, nil
+}
+
 func (t *calcTask) exec() error {
-	for _, e := range t.events {
-		err := t.execEvent(e)
+	events, err := t.getAllEvents()
+
+	if err != nil {
+		return err
+	}
+
+	for _, e := range events {
+		err = t.execEvent(e)
 		if err != nil {
 			return err
 		}

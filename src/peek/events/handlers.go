@@ -95,16 +95,16 @@ func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func calcView(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	peek.RenderTemplate(w, nil, "templates/calc.html")
+}
+
 func calc(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	league := r.FormValue("league")
 	season := r.FormValue("season")
-	date, _ := time.Parse(layout, r.FormValue("date"))
-
-	events, _ := getEventsByWeek(c, league, season, date)
 
 	t := &calcTask{
 		context: c,
-		events:  events,
 		season:  season,
 		league:  league,
 	}
@@ -114,13 +114,12 @@ func calc(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	key := fmt.Sprintf("%s-%s-%s", league, season, date.Format(layout))
-	if err := setEventsToCache(c, key, events); err != nil {
+	if err := memcache.Flush(c); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	url := "/events/" + league + "?s=" + season + "&d=" + date.Format(layout)
+	url := "/events/" + league + "?s=" + season
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
@@ -147,7 +146,7 @@ func reset(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	url := "/events/" + league + "?s=" + season + "&d=" + time.Now().Format(layout)
+	url := "/events/" + league + "?s=" + season
 	http.Redirect(w, r, url, http.StatusFound)
 }
 
