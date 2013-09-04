@@ -49,6 +49,11 @@ func upload(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if err := memcache.Flush(c); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	url := "/events/" + league + "?s=" + season
 	http.Redirect(w, r, url, http.StatusFound)
 }
