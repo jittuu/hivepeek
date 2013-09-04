@@ -3,6 +3,8 @@ package events
 import (
 	"appengine"
 	"appengine/datastore"
+	"errors"
+	"fmt"
 	"peek/ds"
 )
 
@@ -21,34 +23,45 @@ func (t *resetTask) exec() error {
 
 	visited := make(map[string]bool)
 
+	count := 0
+	ch := make(chan error)
 	for i, e := range events {
 		if !visited[e.Home] {
-			if err = t.resetTeam(e.HomeId); err != nil {
-				return err
-			}
+			count++
+			t.resetTeam(e.HomeId, ch)
 		}
 
 		if !visited[e.Away] {
-			if err = t.resetTeam(e.AwayId); err != nil {
-				return err
-			}
+			count++
+			t.resetTeam(e.AwayId, ch)
 		}
 
-		if err = t.resetEvent(e, keys[i]); err != nil {
-			return err
+		count++
+		t.resetEvent(e, keys[i], ch)
+	}
+
+	err_count := 0
+	for i := 0; i < count; i++ {
+		err = <-ch
+		if err != nil {
+			err_count++
 		}
+	}
+
+	if err_count > 0 {
+		return errors.New(fmt.Sprintf("there are %d errors when reseting", err_count))
 	}
 
 	return nil
 }
 
-func (t *resetTask) resetTeam(teamId int64) error {
+func (t *resetTask) resetTeam(teamId int64, ch chan<- error) {
 	team := &ds.Team{}
 	key := datastore.NewKey(t.context, "Team", "", teamId, nil)
 
 	err := datastore.Get(t.context, key, team)
 	if err != nil {
-		return err
+		ch <- err
 	}
 
 	team.OverallRating = 1000
@@ -59,11 +72,13 @@ func (t *resetTask) resetTeam(teamId int64) error {
 	team.AwayNetRatingLen = 0
 	team.LastFiveMatchRating = make([]float64, 0)
 
-	_, err = datastore.Put(t.context, key, team)
-	return err
+	go func() {
+		_, err = datastore.Put(t.context, key, team)
+		ch <- err
+	}()
 }
 
-func (t *resetTask) resetEvent(e *ds.Event, key *datastore.Key) error {
+func (t *resetTask) resetEvent(e *ds.Event, key *datastore.Key, ch chan<- error) {
 	e.HRating = 0
 	e.HRatingLen = 0
 	e.HNetRating = 0
@@ -78,7 +93,8 @@ func (t *resetTask) resetEvent(e *ds.Event, key *datastore.Key) error {
 	e.AFormRating = 0
 	e.AFormRatingLen = 0
 
-	_, err := datastore.Put(t.context, key, e)
-
-	return err
+	go func() {
+		_, err := datastore.Put(t.context, key, e)
+		ch <- err
+	}()
 }
