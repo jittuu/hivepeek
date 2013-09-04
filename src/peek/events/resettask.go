@@ -57,6 +57,7 @@ func (t *resetTask) resetTeam(teamId int64) error {
 	team.HomeNetRatingLen = 0
 	team.AwayNetRating = 0
 	team.AwayNetRatingLen = 0
+	team.LastFiveMatchRating = make([]float64, 0)
 
 	_, err = datastore.Put(t.context, key, team)
 	return err
