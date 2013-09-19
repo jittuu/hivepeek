@@ -67,6 +67,65 @@ func index(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	y, m, d := time.Now().Date()
+	today := time.Date(y, m, d, 0, 0, 0, 0, time.Now().Location())
+	next_3days := today.Add(3 * 24 * time.Hour)
+	fixtures, _, err := ds.GetFixtures(c, today, next_3days)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	teamIDs := make([]int64, 0)
+	for _, f := range fixtures {
+		if f.HomeId != 0 && f.AwayId != 0 {
+			teamIDs = append(teamIDs, f.HomeId)
+			teamIDs = append(teamIDs, f.AwayId)
+		}
+	}
+
+	teams, keys, err := ds.GetTeams(c, teamIDs)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	teamMaps := make(map[int64]*ds.Team)
+	for i, t := range teams {
+		teamMaps[keys[i].IntID()] = t
+	}
+
+	events := make([]*Event, 0)
+	for _, f := range fixtures {
+		h := teamMaps[f.HomeId]
+		a := teamMaps[f.AwayId]
+		if h != nil || a != nil {
+			evt := &ds.Event{
+				League:         f.League,
+				Season:         f.Season,
+				StartTime:      f.StartTime,
+				Home:           h.Name,
+				Away:           a.Name,
+				HRating:        h.OverallRating,
+				HRatingLen:     h.OverallRatingLen,
+				HNetRating:     h.HomeNetRating,
+				HNetRatingLen:  h.HomeNetRatingLen,
+				HFormRating:    h.FormRating(),
+				HFormRatingLen: len(h.LastFiveMatchRating),
+				ARating:        a.OverallRating,
+				ARatingLen:     a.OverallRatingLen,
+				ANetRating:     a.AwayNetRating,
+				ANetRatingLen:  a.AwayNetRatingLen,
+				AFormRating:    a.FormRating(),
+				AFormRatingLen: len(a.LastFiveMatchRating),
+			}
+			events = append(events, &Event{Event: evt})
+		}
+	}
+
+	peek.RenderTemplate(w, events, "templates/fixtures.html")
+}
+
 func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	league := vars["league"]
@@ -97,6 +156,27 @@ func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	}
 
 	peek.RenderTemplate(w, gw, "templates/events.html")
+	return
+}
+
+func fetchView(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	peek.RenderTemplate(w, nil, "templates/fetch.html")
+}
+
+func fetch(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	league := r.FormValue("league")
+	task := &fetchTask{
+		context: c,
+		league:  league,
+	}
+	err := task.exec()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	url := "/events/fixture"
+	http.Redirect(w, r, url, http.StatusFound)
 	return
 }
 

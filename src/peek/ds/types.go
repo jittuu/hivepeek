@@ -4,6 +4,21 @@ import (
 	"time"
 )
 
+type Fixture struct {
+	League    string
+	Season    string
+	StartTime time.Time
+	Home      string
+	HomeId    int64
+	Away      string
+	AwayId    int64
+}
+
+type TeamMapping struct {
+	Name       string
+	MasterName string
+}
+
 type Event struct {
 	League         string
 	Season         string

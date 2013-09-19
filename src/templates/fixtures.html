@@ -1,0 +1,53 @@
+{{define "title"}}
+  Fixture
+{{end}}
+
+{{define "content"}}
+<div class="row">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th></th>
+        <th></th>
+        <th>Home</th>
+        <th>Away</th>
+        <th>%</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{range .}}
+        <tr>
+          <td>
+            {{ if .Calculated }}
+              <span title="calculated">&check;</span>
+            {{ end }}
+            {{ if not .HasEnoughRating }}
+              <span title="warning: not enough form rating">&excl;</span>
+            {{ end }}
+          </td>
+          <td>{{ .StartTime.Format "02-01-2006" }}</td>
+          <td>
+            <span
+              title="{{ printf "%d %d/%d" .HFormRatingLen .HNetRatingLen .HRatingLen }}">
+              {{ .Home }}
+            </span>
+          </td>
+          <td>
+            <span
+              title="{{ printf "%d %d/%d" .AFormRatingLen .ANetRatingLen .ARatingLen }}">
+              {{ .Away }}
+            </span>
+          </td>
+          <td>
+            <span 
+              class="{{ .RatingDiffClass }}"
+              title="{{ printf "(%.2f, %+.2f, %+.2f) v (%.2f, %+.2f, %+.2f)" .HRating .HNetRating .HFormRating .ARating .ANetRating .AFormRating }}">
+              {{ printf "%+.2f" .RatingDiff }} %
+            </span>
+          </td>
+        </tr>
+      {{end}}
+    </tbody>
+  </table>
+</div>
+{{end}}
