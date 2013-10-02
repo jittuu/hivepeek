@@ -3,6 +3,7 @@ package events
 import (
 	"appengine"
 	"appengine/memcache"
+	"appengine/taskqueue"
 	"appengine/user"
 	"bytes"
 	"encoding/gob"
@@ -16,46 +17,34 @@ import (
 	"time"
 )
 
-func newUpload(c appengine.Context, w http.ResponseWriter, r *http.Request) {
-	peek.RenderTemplate(w, nil, "templates/upload.html")
-}
-
-func upload(c appengine.Context, w http.ResponseWriter, r *http.Request) {
-	f, _, err := r.FormFile("file")
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	events, err := parseEvents(f)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
+func pull(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	season := r.FormValue("season")
 	league := r.FormValue("league")
 	update, _ := strconv.ParseBool(r.FormValue("update"))
 
-	t := &uploadTask{
-		context: c,
-		events:  events,
-		season:  season,
-		league:  league,
-		update:  update,
-	}
-	if err := t.exec(); err != nil {
+	DelayPull.Call(c, league, season, update)
+
+	http.Redirect(w, r, "/events/qstats", http.StatusFound)
+	return
+}
+
+func getPull(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	peek.RenderTemplate(w, nil, "templates/pull.html")
+}
+
+func qstats(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	stats, err := taskqueue.QueueStats(c, []string{"default"}, 0)
+	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	if err := memcache.Flush(c); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+	data := &QueueStats{}
+	for _, s := range stats {
+		data.Total += s.Tasks
+		data.Running += s.InFlight
+		data.JustFinished += s.Executed1Minute
 	}
-
-	url := "/events/" + league + "?s=" + season
-	http.Redirect(w, r, url, http.StatusFound)
+	peek.RenderTemplate(w, data, "templates/qstats.html")
 }
 
 const layout = "2006-01-02"

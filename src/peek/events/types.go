@@ -113,3 +113,9 @@ type RunTaskResult struct {
 func (r *RunTaskResult) Won() bool {
 	return r.Profit > 0
 }
+
+type QueueStats struct {
+	Total        int
+	Running      int
+	JustFinished int
+}

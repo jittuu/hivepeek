@@ -12,6 +12,10 @@ handlers:
   static_files: assets/images/favicon.ico
   upload: assets/images/favicon.ico
 
+- url: /_ah/queue/go/delay
+  login: admin
+  script: _go_app
+
 - url: /events/(new|upload|reset|calc)
   login: admin
   script: _go_app

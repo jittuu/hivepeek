@@ -9,10 +9,11 @@ func init() {
 	r := peek.Router.PathPrefix("/events").Subrouter()
 
 	r.Handle("/", appstats.NewHandler(index)).Methods("GET")
+	r.Handle("/qstats", appstats.NewHandler(qstats)).Methods("GET")
+	r.Handle("/pull", appstats.NewHandler(getPull)).Methods("GET")
+	r.Handle("/pull", appstats.NewHandler(pull)).Methods("POST")
 	r.Handle("/fetch", appstats.NewHandler(fetchView)).Methods("GET")
 	r.Handle("/fetch", appstats.NewHandler(fetch)).Methods("POST")
-	r.Handle("/new", appstats.NewHandler(newUpload)).Methods("GET")
-	r.Handle("/upload", appstats.NewHandler(upload)).Methods("POST")
 	r.Handle("/calc", appstats.NewHandler(calcView)).Methods("GET")
 	r.Handle("/calc", appstats.NewHandler(calc)).Methods("POST")
 	r.Handle("/reset", appstats.NewHandler(resetView)).Methods("GET")

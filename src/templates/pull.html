@@ -5,7 +5,7 @@
 {{define "content"}}
 <div class="row">
   <div class="col-lg-4">
-    <form enctype="multipart/form-data" action="/events/upload" method="post">
+    <form action="/events/pull" method="post">
       <fieldset>
         <legend>Upload New Events</legend>
       </fieldset>
@@ -27,10 +27,6 @@
           <option value="la-liga">La Liga</option>
           <option value="ligue-1">Ligue 1</option>
         </select>
-      </div>
-      <div class="form-group">
-        <label for="file">File</label>
-        <input name="file" type="file" />
       </div>
       <div class="checkbox">
         <label>
