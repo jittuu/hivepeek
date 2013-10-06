@@ -131,7 +131,7 @@ func (t *uploadTask) createOrUpdateEvent(old *Event, e *ds.Event, teams map[stri
 			ch <- err
 		}()
 	} else {
-    // we can send now since it is buffered (1)
+		// we can send now since it is buffered (1)
 		ch <- nil
 	}
 
