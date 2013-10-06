@@ -19,5 +19,5 @@ func init() {
 }
 
 func home(c appengine.Context, w http.ResponseWriter, r *http.Request) {
-	RenderTemplate(w, nil, "templates/home.html")
+	http.Redirect(w, r, "events/fixture", http.StatusFound)
 }
