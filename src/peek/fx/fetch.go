@@ -66,6 +66,8 @@ func getUrl(league string) (url string, err error) {
 		url = "http://www.goalserve.com/getfeed/421736c766374db393fa4244a760e11a/soccernew/germany_shedule"
 	case "la-liga":
 		url = "http://www.goalserve.com/getfeed/421736c766374db393fa4244a760e11a/soccernew/spain_shedule"
+	case "ligue-1":
+		url = "http://www.goalserve.com/getfeed/421736c766374db393fa4244a760e11a/soccernew/france_shedule"
 	default:
 		err = errors.New("Not supported league")
 	}
