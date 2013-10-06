@@ -12,6 +12,7 @@ const (
 	epl        = 1204
 	serieA     = 1269
 	bundesliga = 1229
+	la_liga    = 1399
 )
 
 type fetchTask struct {
@@ -37,7 +38,7 @@ func (t *fetchTask) exec() error {
 	}
 
 	for _, l := range s.Leagues {
-		if l.Id == epl || l.Id == serieA || l.Id == bundesliga {
+		if l.Id == epl || l.Id == serieA || l.Id == bundesliga || l.Id == la_liga {
 			fixtures, fkeys, err := ds.GetFixturesByLeague(t.context, t.league)
 			if err != nil {
 				return err
