@@ -83,14 +83,14 @@ func (t *uploadTask) createEvents(teams map[string]*Team) error {
 		return err
 	}
 
-	ch := make(chan error)
-	for _, e := range t.events {
+	waits := make([]<-chan error, len(t.events))
+	for i, e := range t.events {
 		old := oldEvents.Find(e.Home, e.Away)
-		t.createOrUpdateEvent(old, e, teams, ch)
+		waits[i] = t.createOrUpdateEvent(old, e, teams)
 	}
 
 	errorCount := 0
-	for i := 0; i < len(t.events); i++ {
+	for _, ch := range waits {
 		err = <-ch
 		if err != nil {
 			errorCount++
@@ -104,7 +104,8 @@ func (t *uploadTask) createEvents(teams map[string]*Team) error {
 	return nil
 }
 
-func (t *uploadTask) createOrUpdateEvent(old *Event, e *ds.Event, teams map[string]*Team, ch chan<- error) {
+func (t *uploadTask) createOrUpdateEvent(old *Event, e *ds.Event, teams map[string]*Team) <-chan error {
+	ch := make(chan error, 1)
 	if old == nil {
 		h := teams[e.Home]
 		a := teams[e.Away]
@@ -129,7 +130,12 @@ func (t *uploadTask) createOrUpdateEvent(old *Event, e *ds.Event, teams map[stri
 			_, err := datastore.Put(t.context, key, old.Event)
 			ch <- err
 		}()
+	} else {
+    // we can send now since it is buffered (1)
+		ch <- nil
 	}
+
+	return ch
 }
 
 func (t *uploadTask) getExistingEvents() (Events, error) {
