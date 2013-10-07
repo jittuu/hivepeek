@@ -57,10 +57,8 @@ func index(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 }
 
 func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
-	y, m, d := time.Now().Date()
-	today := time.Date(y, m, d, 0, 0, 0, 0, time.Now().Location())
-	next_3days := today.Add(3 * 24 * time.Hour)
-	fixtures, _, err := ds.GetFixtures(c, today, next_3days)
+	next_month := time.Now().AddDate(0, 1, 0)
+	fixtures, _, err := ds.GetFixtures(c, time.Now(), next_month)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -88,8 +86,9 @@ func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	for _, f := range fixtures {
 		h := teamMaps[f.HomeId]
 		a := teamMaps[f.AwayId]
-		if h != nil || a != nil {
-			evt := &ds.Event{
+		var evt *ds.Event
+		if h != nil && a != nil {
+			evt = &ds.Event{
 				League:         f.League,
 				Season:         f.Season,
 				StartTime:      f.StartTime,
@@ -108,8 +107,16 @@ func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 				AFormRating:    a.FormRating(),
 				AFormRatingLen: len(a.LastFiveMatchRating),
 			}
-			events = append(events, &Event{Event: evt})
+		} else {
+			evt = &ds.Event{
+				League:    f.League,
+				Season:    f.Season,
+				StartTime: f.StartTime,
+				Home:      f.Home,
+				Away:      f.Away,
+			}
 		}
+		events = append(events, &Event{Event: evt})
 	}
 
 	peek.RenderTemplate(w, events, "templates/fixtures.html")
