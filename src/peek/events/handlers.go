@@ -119,6 +119,12 @@ func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 		events = append(events, &Event{Event: evt})
 	}
 
+	startTime := func(e1, e2 *Event) bool {
+		return e1.StartTime.Before(e2.StartTime)
+	}
+
+	By(startTime).Sort(events)
+
 	peek.RenderTemplate(w, events, "templates/fixtures.html")
 }
 

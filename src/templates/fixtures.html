@@ -25,7 +25,7 @@
               <span title="warning: not enough form rating">&excl;</span>
             {{ end }}
           </td>
-          <td>{{ .StartTime.Format "02-01-2006" }}</td>
+          <td>{{ .StartTimeSGT.Format "02-01-2006 3:04 PM" }}</td>
           <td>
             <span
               title="{{ printf "%d %d/%d" .HFormRatingLen .HNetRatingLen .HRatingLen }}">

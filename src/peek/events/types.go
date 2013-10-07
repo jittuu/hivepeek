@@ -92,6 +92,11 @@ func (e *Event) LayPrice(back float64) float64 {
 	return (1 / (back - 1)) + 1
 }
 
+func (e *Event) StartTimeSGT() time.Time {
+	sgt, _ := time.LoadLocation("Asia/Singapore")
+	return e.StartTime.In(sgt)
+}
+
 type Events []*Event
 
 func (events Events) Find(home, away string) *Event {
