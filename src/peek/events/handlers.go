@@ -190,24 +190,10 @@ func calc(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	league := r.FormValue("league")
 	season := r.FormValue("season")
 
-	t := &calcTask{
-		context: c,
-		season:  season,
-		league:  league,
-	}
+	DelayCalc.Call(c, league, season)
 
-	if err := t.exec(); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if err := memcache.Flush(c); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	url := "/events/" + league + "?s=" + season
-	http.Redirect(w, r, url, http.StatusFound)
+	http.Redirect(w, r, "/events/qstats", http.StatusFound)
+	return
 }
 
 func resetView(c appengine.Context, w http.ResponseWriter, r *http.Request) {
