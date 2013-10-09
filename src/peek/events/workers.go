@@ -12,6 +12,8 @@ var (
 	DelayPull = delay.Func("pull-result", PullResult)
 
 	DelayCalc = delay.Func("calc-result", CalcResult)
+
+	DelayFetch = delay.Func("fetch-fixture", FetchFixture)
 )
 
 func getPullUrl(l string, s string) string {
@@ -73,5 +75,14 @@ func CalcResult(c appengine.Context, league string, season string) {
 	checkErr(err)
 
 	err = memcache.Flush(c)
+	checkErr(err)
+}
+
+func FetchFixture(c appengine.Context, league string) {
+	task := &fetchTask{
+		context: c,
+		league:  league,
+	}
+	err := task.exec()
 	checkErr(err)
 }

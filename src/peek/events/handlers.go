@@ -167,18 +167,10 @@ func fetchView(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 
 func fetch(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	league := r.FormValue("league")
-	task := &fetchTask{
-		context: c,
-		league:  league,
-	}
-	err := task.exec()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
-	url := "/events/fixture"
-	http.Redirect(w, r, url, http.StatusFound)
+	DelayFetch.Call(c, league)
+
+	http.Redirect(w, r, "/events/qstats", http.StatusFound)
 	return
 }
 
