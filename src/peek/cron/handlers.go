@@ -18,6 +18,14 @@ func pull(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	handle(c, w, r, f)
 }
 
+func calc(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	f := func(context appengine.Context, l, s string) {
+		events.DelayCalc.Call(context, l, s)
+	}
+
+	handle(c, w, r, f)
+}
+
 func handle(c appengine.Context, w http.ResponseWriter, r *http.Request, f func(c appengine.Context, l, s string)) {
 	season := "2013-2014"
 	for _, l := range leagues {
