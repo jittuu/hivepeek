@@ -1,0 +1,10 @@
+cron:
+- description: daily pull previous result job
+  url: /cron/pull
+  schedule: every day 04:00
+- description: daily calc job
+  url: /cron/calc
+  schedule: every day 05:00
+- description: daily fetch fixture job
+  url: /cron/fetch
+  schedule: every day 06:00
