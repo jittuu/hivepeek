@@ -20,6 +20,7 @@ func init() {
 	r.Handle("/reset", appstats.NewHandler(reset)).Methods("POST")
 	r.Handle("/run", appstats.NewHandler(runView)).Methods("GET")
 	r.Handle("/run", appstats.NewHandler(run)).Methods("POST")
+	r.Handle("/today", appstats.NewHandler(today)).Methods("GET")
 	r.Handle("/fixture", appstats.NewHandler(fixture)).Methods("GET")
 	r.Handle("/{league}", appstats.NewHandler(league)).Methods("GET")
 }

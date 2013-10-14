@@ -19,5 +19,5 @@ func init() {
 }
 
 func home(c appengine.Context, w http.ResponseWriter, r *http.Request) {
-	http.Redirect(w, r, "events/fixture", http.StatusFound)
+	http.Redirect(w, r, "events/today", http.StatusFound)
 }

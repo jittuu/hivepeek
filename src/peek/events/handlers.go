@@ -56,74 +56,36 @@ func index(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func today(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	tmr := time.Now().AddDate(0, 0, 1)
+	q := &fixtureQuery{
+		from:    time.Now(),
+		to:      tmr,
+		context: c,
+	}
+
+	events, err := q.exec()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	peek.RenderTemplate(w, events, "templates/fixtures.html")
+}
+
 func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	next_month := time.Now().AddDate(0, 1, 0)
-	fixtures, _, err := ds.GetFixtures(c, time.Now(), next_month)
+	q := &fixtureQuery{
+		from:    time.Now(),
+		to:      next_month,
+		context: c,
+	}
+
+	events, err := q.exec()
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	teamIDs := make([]int64, 0)
-	for _, f := range fixtures {
-		if f.HomeId != 0 && f.AwayId != 0 {
-			teamIDs = append(teamIDs, f.HomeId)
-			teamIDs = append(teamIDs, f.AwayId)
-		}
-	}
-
-	teams, keys, err := ds.GetTeams(c, teamIDs)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	teamMaps := make(map[int64]*ds.Team)
-	for i, t := range teams {
-		teamMaps[keys[i].IntID()] = t
-	}
-
-	events := make([]*Event, 0)
-	for _, f := range fixtures {
-		h := teamMaps[f.HomeId]
-		a := teamMaps[f.AwayId]
-		var evt *ds.Event
-		if h != nil && a != nil {
-			evt = &ds.Event{
-				League:         f.League,
-				Season:         f.Season,
-				StartTime:      f.StartTime,
-				Home:           h.Name,
-				Away:           a.Name,
-				HRating:        h.OverallRating,
-				HRatingLen:     h.OverallRatingLen,
-				HNetRating:     h.HomeNetRating,
-				HNetRatingLen:  h.HomeNetRatingLen,
-				HFormRating:    h.FormRating(),
-				HFormRatingLen: len(h.LastFiveMatchRating),
-				ARating:        a.OverallRating,
-				ARatingLen:     a.OverallRatingLen,
-				ANetRating:     a.AwayNetRating,
-				ANetRatingLen:  a.AwayNetRatingLen,
-				AFormRating:    a.FormRating(),
-				AFormRatingLen: len(a.LastFiveMatchRating),
-			}
-		} else {
-			evt = &ds.Event{
-				League:    f.League,
-				Season:    f.Season,
-				StartTime: f.StartTime,
-				Home:      f.Home,
-				Away:      f.Away,
-			}
-		}
-		events = append(events, &Event{Event: evt})
-	}
-
-	startTime := func(e1, e2 *Event) bool {
-		return e1.StartTime.Before(e2.StartTime)
-	}
-
-	By(startTime).Sort(events)
 
 	peek.RenderTemplate(w, events, "templates/fixtures.html")
 }
