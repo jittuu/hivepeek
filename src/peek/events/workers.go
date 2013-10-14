@@ -44,11 +44,16 @@ func checkErr(err error) {
 func PullResult(c appengine.Context, league string, season string, update bool) {
 	url := getPullUrl(league, season)
 	client := urlfetch.Client(c)
+
+	c.Infof("[start] getting data from %s", url)
 	resp, err := client.Get(url)
 	checkErr(err)
+	c.Infof("[done] getting data from %s", url)
 
+	c.Infof("[start] parsing data")
 	events, err := parseEvents(resp.Body)
 	checkErr(err)
+	c.Infof("[done] parsing data with %d events", len(events))
 
 	t := &uploadTask{
 		context: c,
@@ -57,14 +62,18 @@ func PullResult(c appengine.Context, league string, season string, update bool) 
 		league:  league,
 		update:  update,
 	}
+	c.Infof("[start] uploading events")
 	err = t.exec()
 	checkErr(err)
+	c.Infof("[done] uploading events")
 
 	err = memcache.Flush(c)
 	checkErr(err)
 }
 
 func CalcResult(c appengine.Context, league string, season string) {
+	c.Infof("[start] calculating events for league: %s (%s)", league, season)
+
 	t := &calcTask{
 		context: c,
 		season:  season,
@@ -73,16 +82,19 @@ func CalcResult(c appengine.Context, league string, season string) {
 
 	err := t.exec()
 	checkErr(err)
+	c.Infof("[done] calculating events for league: %s (%s)", league, season)
 
 	err = memcache.Flush(c)
 	checkErr(err)
 }
 
 func FetchFixture(c appengine.Context, league string) {
+	c.Infof("[start] fetching fixtures for league: %s", league)
 	task := &fetchTask{
 		context: c,
 		league:  league,
 	}
 	err := task.exec()
 	checkErr(err)
+	c.Infof("[done] fetching fixtures for league: %s", league)
 }
