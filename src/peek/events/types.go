@@ -93,7 +93,7 @@ func (e *Event) LayPrice(back float64) float64 {
 }
 
 func (e *Event) StartTimeSGT() time.Time {
-	sgt, _ := time.LoadLocation("Asia/Singapore")
+	sgt := time.FixedZone("SGT", 8*60*60)
 	return e.StartTime.In(sgt)
 }
 
