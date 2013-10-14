@@ -40,6 +40,8 @@ func handle(c appengine.Context, w http.ResponseWriter, r *http.Request, f func(
 		f(c, l, season)
 	}
 
-	http.Redirect(w, r, "/events/qstats", http.StatusFound)
-	return
+	if r.Header.Get("X-Appengine-Cron") != "true" {
+		http.Redirect(w, r, "/events/qstats", http.StatusFound)
+		return
+	}
 }
