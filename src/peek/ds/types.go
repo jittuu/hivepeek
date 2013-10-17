@@ -43,12 +43,20 @@ type Event struct {
 	AFormRatingLen int
 	AvgOdds        MatchOdds
 	MaxOdds        MatchOdds
+	AvgAHOdds      AHOdds
+	MaxAHOdds      AHOdds
 }
 
 type MatchOdds struct {
 	Home float64 `datastore:",noindex"`
 	Draw float64 `datastore:",noindex"`
 	Away float64 `datastore:",noindex"`
+}
+
+type AHOdds struct {
+	Home     float64 `datastore:",noindex"`
+	Away     float64 `datastore:",noindex"`
+	Handicap float64 `datastore:",noindex"`
 }
 
 type Team struct {

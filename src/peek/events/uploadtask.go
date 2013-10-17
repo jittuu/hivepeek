@@ -125,6 +125,8 @@ func (t *uploadTask) createOrUpdateEvent(old *Event, e *ds.Event, teams map[stri
 	} else if t.update {
 		old.AvgOdds = e.AvgOdds
 		old.MaxOdds = e.MaxOdds
+		old.AvgAHOdds = e.AvgAHOdds
+		old.MaxAHOdds = e.MaxAHOdds
 		key := datastore.NewKey(t.context, "Event", "", old.Id, nil)
 		go func() {
 			_, err := datastore.Put(t.context, key, old.Event)
