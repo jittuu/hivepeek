@@ -45,6 +45,8 @@ type Event struct {
 	MaxOdds        MatchOdds
 	AvgAHOdds      AHOdds
 	MaxAHOdds      AHOdds
+	AvgOUOdds      OUOdds
+	MaxOUOdds      OUOdds
 }
 
 type MatchOdds struct {
@@ -56,6 +58,12 @@ type MatchOdds struct {
 type AHOdds struct {
 	Home     float64 `datastore:",noindex"`
 	Away     float64 `datastore:",noindex"`
+	Handicap float64 `datastore:",noindex"`
+}
+
+type OUOdds struct {
+	Over     float64 `datastore:",noindex"`
+	Under    float64 `datastore:",noindex"`
 	Handicap float64 `datastore:",noindex"`
 }
 

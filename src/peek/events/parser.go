@@ -34,6 +34,11 @@ func parseEvents(f io.Reader) ([]*ds.Event, error) {
 		mxAHA, _ := strconv.ParseFloat(line[h.MxAHA], 64)
 		avAHH, _ := strconv.ParseFloat(line[h.AvAHH], 64)
 		avAHA, _ := strconv.ParseFloat(line[h.AvAHA], 64)
+		hOU := 2.5
+		mxOUO, _ := strconv.ParseFloat(line[h.MxOUO], 64)
+		mxOUU, _ := strconv.ParseFloat(line[h.MxOUU], 64)
+		avOUO, _ := strconv.ParseFloat(line[h.AvOUO], 64)
+		avOUU, _ := strconv.ParseFloat(line[h.AvOUU], 64)
 
 		event := &ds.Event{
 			StartTime: startTime,
@@ -60,6 +65,16 @@ func parseEvents(f io.Reader) ([]*ds.Event, error) {
 				Handicap: hAH,
 				Home:     avAHH,
 				Away:     avAHA,
+			},
+			MaxOUOdds: ds.OUOdds{
+				Handicap: hOU,
+				Over:     mxOUO,
+				Under:    mxOUU,
+			},
+			AvgOUOdds: ds.OUOdds{
+				Handicap: hOU,
+				Over:     avOUO,
+				Under:    avOUU,
 			},
 		}
 
@@ -105,6 +120,14 @@ func getHeaderIndex(header []string) *headerIndex {
 			h.AvAHH = i
 		case "BbAvAHA":
 			h.AvAHA = i
+		case "BbMx>2.5":
+			h.MxOUO = i
+		case "BbMx<2.5":
+			h.MxOUU = i
+		case "BbAv>2.5":
+			h.AvOUO = i
+		case "BbAv<2.5":
+			h.AvOUU = i
 		}
 	}
 
@@ -120,4 +143,7 @@ type headerIndex struct {
 	AHh           int
 	MxAHH, MxAHA  int
 	AvAHH, AvAHA  int
+	OUh           int
+	MxOUO, MxOUU  int
+	AvOUO, AvOUU  int
 }

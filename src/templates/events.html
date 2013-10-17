@@ -32,6 +32,8 @@
         <th>AH - hdp</th>
         <th>AH - H</th>
         <th>Ah - A</th>
+        <th>Over (2.5)</th>
+        <th>Under (2.5)</th>
       </tr>
     </thead>
     <tbody>
@@ -80,6 +82,8 @@
           <td>{{ printf "%.2f" .MaxAHOdds.Handicap }}</td>
           <td>{{ printf "%.2f" .MaxAHOdds.Home }}</td>
           <td>{{ printf "%.2f" .MaxAHOdds.Away }}</td>
+          <td>{{ printf "%.2f" .MaxOUOdds.Over }}</td>
+          <td>{{ printf "%.2f" .MaxOUOdds.Under }}</td>
         </tr>
       {{end}}
     </tbody>
