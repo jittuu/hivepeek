@@ -90,6 +90,33 @@ func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, events, "templates/fixtures.html")
 }
 
+func download(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	league := vars["league"]
+	season := vars["season"]
+
+	var buf bytes.Buffer
+
+	dl := &dlTask{
+		context: c,
+		league:  league,
+		season:  season,
+		w:       &buf,
+	}
+
+	if err := dl.exec(); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fn := fmt.Sprintf("%s-%s.csv", league, season)
+	w.Header().Add("Content-type", "text/csv")
+	w.Header().Add("Content-disposition", "attachment;filename="+fn)
+	w.Write(buf.Bytes())
+
+	return
+}
+
 func league(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	league := vars["league"]
