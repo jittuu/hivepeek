@@ -16,13 +16,19 @@ func parseEvents(f io.Reader) ([]*ds.Event, error) {
 		return nil, err
 	}
 
-	events := make([]*ds.Event, len(lines)-1)
+	events := make([]*ds.Event, 0)
 	h := getHeaderIndex(lines[0])
 
-	for i, line := range lines[1:] {
+	for _, line := range lines[1:] {
 		startTime, _ := time.Parse("02/01/06", line[h.StartTime])
-		hGoal, _ := strconv.ParseInt(line[h.HGoal], 10, 32)
-		aGoal, _ := strconv.ParseInt(line[h.AGoal], 10, 32)
+		hGoal, err := strconv.ParseInt(line[h.HGoal], 10, 32)
+		if err != nil {
+			continue
+		}
+		aGoal, err := strconv.ParseInt(line[h.AGoal], 10, 32)
+		if err != nil {
+			continue
+		}
 		mxH, _ := strconv.ParseFloat(line[h.MxH], 64)
 		avH, _ := strconv.ParseFloat(line[h.AvH], 64)
 		mxD, _ := strconv.ParseFloat(line[h.MxD], 64)
@@ -78,7 +84,7 @@ func parseEvents(f io.Reader) ([]*ds.Event, error) {
 			},
 		}
 
-		events[i] = event
+		events = append(events, event)
 	}
 
 	return events, nil
