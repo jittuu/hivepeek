@@ -123,6 +123,10 @@ func (t *uploadTask) createOrUpdateEvent(old *Event, e *ds.Event, teams map[stri
 			}()
 		}
 	} else if t.update {
+		old.Home = e.Home
+		old.Away = e.Away
+		old.HGoal = e.HGoal
+		old.AGoal = e.AGoal
 		old.AvgOdds = e.AvgOdds
 		old.MaxOdds = e.MaxOdds
 		old.AvgAHOdds = e.AvgAHOdds
