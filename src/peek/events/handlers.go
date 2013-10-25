@@ -59,7 +59,7 @@ func index(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 func today(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	tmr := time.Now().AddDate(0, 0, 1)
 	q := &fixtureQuery{
-		from:    time.Now(),
+		from:    time.Now().Add(-2 * time.Hour),
 		to:      tmr,
 		context: c,
 	}
