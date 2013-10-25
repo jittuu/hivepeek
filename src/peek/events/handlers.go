@@ -90,6 +90,19 @@ func fixture(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, events, "templates/fixtures.html")
 }
 
+func viewDownload(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	l := r.FormValue("league")
+	s := r.FormValue("season")
+	if l != "" && s != "" {
+		url := fmt.Sprintf("/events/dl/%s/%s", l, s)
+		http.Redirect(w, r, url, http.StatusFound)
+		return
+	}
+
+	peek.RenderTemplate(w, nil, "templates/download.html")
+	return
+}
+
 func download(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	league := vars["league"]
