@@ -110,3 +110,22 @@ func GetFixturesByLeague(c appengine.Context, league string) (fixtures []*Fixtur
 	keys, err = q.GetAll(c, &fixtures)
 	return
 }
+
+func GetEventGoalsByLeagueAndSeason(c appengine.Context, league, season string) (eventGoals []*EventGoals, err error) {
+	q := datastore.
+		NewQuery("EventGoals").
+		Filter("League =", league).
+		Filter("Season =", season)
+
+	eventGoals = make([]*EventGoals, 0)
+	keys, err := q.GetAll(c, &eventGoals)
+	if err != nil {
+		eventGoals = nil
+		return
+	}
+
+	for i, eg := range eventGoals {
+		eg.Id = keys[i].IntID()
+	}
+	return
+}

@@ -4,6 +4,16 @@ import (
 	"time"
 )
 
+type EventGoals struct {
+	Id             int64 `datastore:"-"`
+	League, Season string
+	StartTime      time.Time
+	Home, Away     string
+	HomeGoals      []int `datastore:",noindex"`
+	AwayGoals      []int `datastore:",noindex"`
+	EventId        int64
+}
+
 type Fixture struct {
 	League    string
 	Season    string
