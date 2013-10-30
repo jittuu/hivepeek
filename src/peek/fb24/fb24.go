@@ -17,16 +17,10 @@ type Event struct {
 }
 
 func (e *Event) Home() string {
-	if e.home[len(e.home)-2:] == "FC" {
-		return e.home[:len(e.home)-3]
-	}
 	return e.home
 }
 
 func (e *Event) Away() string {
-	if e.away[len(e.away)-2:] == "FC" {
-		return e.away[:len(e.away)-3]
-	}
 	return e.away
 }
 
