@@ -12,18 +12,12 @@
         <th>Home</th>
         <th>Away</th>
         <th>%</th>
-        <th>H 00-15</th>
-        <th>H 16-30</th>
-        <th>H 31-45</th>
-        <th>H 46-60</th>
-        <th>H 61-75</th>
-        <th>H 76-90</th>
-        <th>A 00-15</th>
-        <th>A 16-30</th>
-        <th>A 31-45</th>
-        <th>A 46-60</th>
-        <th>A 61-75</th>
-        <th>A 76-90</th>
+        <th>00-15</th>
+        <th>16-30</th>
+        <th>31-45</th>
+        <th>46-60</th>
+        <th>61-75</th>
+        <th>76-90</th>
       </tr>
     </thead>
     <tbody>
@@ -58,52 +52,76 @@
             </span>
           </td>
           <td>
-            <span>{{ .HGoalsFor.M0_15 }}</span>
-            <span class="goal-against">{{ .HGoalsAgainst.M0_15 }}</span>
+            <div>
+              <span class="goals-side">H</span>
+              <span>{{ .HGoalsFor.M0_15 }}</span>
+              <span class="goal-against">{{ .HGoalsAgainst.M0_15 }}</span>
+            </div>
+            <div>
+              <span class="goals-side">A</span>
+              <span>{{ .AGoalsFor.M0_15 }}</span>
+              <span class="goal-against">{{ .AGoalsAgainst.M0_15 }}</span>
+            </div>
           </td>
           <td>
-            <span>{{ .HGoalsFor.M16_30 }}</span>
-            <span class="goal-against">{{ .HGoalsAgainst.M16_30 }}</span>
+            <div>
+              <span class="goals-side">H</span>
+              <span>{{ .HGoalsFor.M16_30 }}</span>
+              <span class="goal-against">{{ .HGoalsAgainst.M16_30 }}</span>
+            </div>
+            <div>
+              <span class="goals-side">A</span>
+              <span>{{ .AGoalsFor.M16_30 }}</span>
+              <span class="goal-against">{{ .AGoalsAgainst.M16_30 }}</span>
+            </div>
           </td>
           <td>
-            <span>{{ .HGoalsFor.M31_45 }}</span>
-            <span class="goal-against">{{ .HGoalsAgainst.M31_45 }}</span>
+            <div>
+              <span class="goals-side">H</span>
+              <span>{{ .HGoalsFor.M31_45 }}</span>
+              <span class="goal-against">{{ .HGoalsAgainst.M31_45 }}</span>
+            </div>
+            <div>
+              <span class="goals-side">A</span>
+              <span>{{ .AGoalsFor.M31_45 }}</span>
+              <span class="goal-against">{{ .AGoalsAgainst.M31_45 }}</span>
+            </div>
           </td>
           <td>
-            <span>{{ .HGoalsFor.M46_60 }}</span>
-            <span class="goal-against">{{ .HGoalsAgainst.M46_60 }}</span>
+            <div>
+              <span class="goals-side">H</span>
+              <span>{{ .HGoalsFor.M46_60 }}</span>
+              <span class="goal-against">{{ .HGoalsAgainst.M46_60 }}</span>
+            </div>
+            <div>
+              <span class="goals-side">A</span>
+              <span>{{ .AGoalsFor.M46_60 }}</span>
+              <span class="goal-against">{{ .AGoalsAgainst.M46_60 }}</span>
+            </div>
           </td>
           <td>
-            <span>{{ .HGoalsFor.M61_75 }}</span>
-            <span class="goal-against">{{ .HGoalsAgainst.M61_75 }}</span>
+            <div>
+              <span class="goals-side">H</span>
+              <span>{{ .HGoalsFor.M61_75 }}</span>
+              <span class="goal-against">{{ .HGoalsAgainst.M61_75 }}</span>
+            </div>
+            <div>
+              <span class="goals-side">A</span>
+              <span>{{ .AGoalsFor.M61_75 }}</span>
+              <span class="goal-against">{{ .AGoalsAgainst.M61_75 }}</span>
+            </div>
           </td>
           <td>
-            <span>{{ .HGoalsFor.M76_90 }}</span>
-            <span class="goal-against">{{ .HGoalsAgainst.M76_90 }}</span>
-          </td>
-          <td>
-            <span>{{ .AGoalsFor.M0_15 }}</span>
-            <span class="goal-against">{{ .AGoalsAgainst.M0_15 }}</span>
-          </td>
-          <td>
-            <span>{{ .AGoalsFor.M16_30 }}</span>
-            <span class="goal-against">{{ .AGoalsAgainst.M16_30 }}</span>
-          </td>
-          <td>
-            <span>{{ .AGoalsFor.M31_45 }}</span>
-            <span class="goal-against">{{ .AGoalsAgainst.M31_45 }}</span>
-          </td>
-          <td>
-            <span>{{ .AGoalsFor.M46_60 }}</span>
-            <span class="goal-against">{{ .AGoalsAgainst.M46_60 }}</span>
-          </td>
-          <td>
-            <span>{{ .AGoalsFor.M61_75 }}</span>
-            <span class="goal-against">{{ .AGoalsAgainst.M61_75 }}</span>
-          </td>
-          <td>
-            <span>{{ .AGoalsFor.M76_90 }}</span>
-            <span class="goal-against">{{ .AGoalsAgainst.M76_90 }}</span>
+            <div>
+              <span class="goals-side">H</span>
+              <span>{{ .HGoalsFor.M76_90 }}</span>
+              <span class="goal-against">{{ .HGoalsAgainst.M76_90 }}</span>
+            </div>
+            <div>
+              <span class="goals-side">A</span>
+              <span>{{ .AGoalsFor.M76_90 }}</span>
+              <span class="goal-against">{{ .AGoalsAgainst.M76_90 }}</span>
+            </div>
           </td>
         </tr>
       {{end}}
