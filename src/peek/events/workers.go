@@ -83,7 +83,9 @@ func CalcResult(c appengine.Context, league string, season string) {
 	}
 
 	err := t.exec()
-	checkErr(err)
+	if err != nil {
+		c.Errorf(err.Error())
+	}
 	c.Infof("[done] calculating events for league: %s (%s)", league, season)
 
 	err = memcache.Flush(c)
