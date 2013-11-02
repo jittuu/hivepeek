@@ -54,12 +54,16 @@ func (f *fixtureQuery) exec() (events []*Event, err error) {
 				HNetRatingLen:  h.HomeNetRatingLen,
 				HFormRating:    h.FormRating(),
 				HFormRatingLen: len(h.LastFiveMatchRating),
+				HGoalsFor:      h.GoalsFor,
+				HGoalsAgainst:  h.GoalsAgainst,
 				ARating:        a.OverallRating,
 				ARatingLen:     a.OverallRatingLen,
 				ANetRating:     a.AwayNetRating,
 				ANetRatingLen:  a.AwayNetRatingLen,
 				AFormRating:    a.FormRating(),
 				AFormRatingLen: len(a.LastFiveMatchRating),
+				AGoalsFor:      a.GoalsFor,
+				AGoalsAgainst:  a.GoalsAgainst,
 			}
 		} else {
 			evt = &ds.Event{
