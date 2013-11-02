@@ -71,6 +71,8 @@ func (t *resetTask) resetTeam(teamId int64, ch chan<- error) {
 	team.AwayNetRating = 0
 	team.AwayNetRatingLen = 0
 	team.LastFiveMatchRating = make([]float64, 0)
+	team.GoalsFor = ds.EventSector{}
+	team.GoalsAgainst = ds.EventSector{}
 
 	go func() {
 		_, err = datastore.Put(t.context, key, team)
@@ -92,6 +94,10 @@ func (t *resetTask) resetEvent(e *ds.Event, key *datastore.Key, ch chan<- error)
 	e.ANetRatingLen = 0
 	e.AFormRating = 0
 	e.AFormRatingLen = 0
+	e.HGoalsFor = ds.EventSector{}
+	e.HGoalsAgainst = ds.EventSector{}
+	e.AGoalsFor = ds.EventSector{}
+	e.AGoalsAgainst = ds.EventSector{}
 
 	go func() {
 		_, err := datastore.Put(t.context, key, e)

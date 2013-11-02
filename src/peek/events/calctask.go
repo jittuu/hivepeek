@@ -3,6 +3,7 @@ package events
 import (
 	"appengine"
 	"appengine/datastore"
+	"fmt"
 	"peek/ds"
 )
 
@@ -10,6 +11,14 @@ type calcTask struct {
 	context appengine.Context
 	season  string
 	league  string
+}
+
+type ErrMissingGoalDetails struct {
+	Home, Away string
+}
+
+func (e *ErrMissingGoalDetails) Error() string {
+	return fmt.Sprintf("unmatch goal info for event (%s vs %s)", e.Home, e.Away)
 }
 
 func (t *calcTask) getAllEvents() ([]*Event, error) {
@@ -56,6 +65,13 @@ func (t *calcTask) execEvent(e *Event) error {
 		return nil
 	}
 
+	if e.HGoal != len(e.HGoals) {
+		return &ErrMissingGoalDetails{e.Home, e.Away}
+	}
+	if e.AGoal != len(e.AGoals) {
+		return &ErrMissingGoalDetails{e.Home, e.Away}
+	}
+
 	h, a, err := t.getTeams(e)
 	if err != nil {
 		return err
@@ -67,12 +83,16 @@ func (t *calcTask) execEvent(e *Event) error {
 	e.HNetRatingLen = h.HomeNetRatingLen
 	e.HFormRating = h.FormRating()
 	e.HFormRatingLen = len(h.LastFiveMatchRating)
+	e.HGoalsFor = h.GoalsFor
+	e.HGoalsAgainst = h.GoalsAgainst
 	e.ARating = a.OverallRating
 	e.ARatingLen = a.OverallRatingLen
 	e.ANetRating = a.AwayNetRating
 	e.ANetRatingLen = a.AwayNetRatingLen
 	e.AFormRating = a.FormRating()
 	e.AFormRatingLen = len(a.LastFiveMatchRating)
+	e.AGoalsFor = a.GoalsFor
+	e.AGoalsAgainst = a.GoalsAgainst
 
 	switch {
 	case e.HGoal > e.AGoal:
@@ -93,6 +113,9 @@ func (t *calcTask) execEvent(e *Event) error {
 	h.HomeNetRatingLen += 1
 	a.OverallRatingLen += 1
 	a.AwayNetRatingLen += 1
+
+	h.CalcEventGoalsSector(e.HGoals, e.AGoals)
+	a.CalcEventGoalsSector(e.AGoals, e.HGoals)
 
 	ch := make(chan bool)
 	go func() {

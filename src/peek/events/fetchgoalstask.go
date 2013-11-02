@@ -139,6 +139,8 @@ func (t *fetchGoalsTask) exec() error {
 			event_goals[i] = e
 			event_goals_keys[i] = datastore.NewIncompleteKey(t.context, "EventGoals", nil)
 		} else {
+			existing.HomeGoals = ge.HomeGoals()
+			existing.AwayGoals = ge.AwayGoals()
 			if event != nil {
 				existing.EventId = event.Id
 				event.HGoals = existing.HomeGoals
