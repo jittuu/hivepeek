@@ -38,6 +38,8 @@ type Event struct {
 	Away           string
 	AwayId         int64
 	HGoal          int     `datastore:",noindex"`
+	HGoals         []int   `datastore:",noindex"`
+	AGoals         []int   `datastore:",noindex"`
 	AGoal          int     `datastore:",noindex"`
 	HRating        float64 `datastore:",noindex"`
 	HRatingLen     int     `datastore:",noindex"`

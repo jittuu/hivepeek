@@ -24,20 +24,20 @@ func (eventGoals EventGoals) Find(home, away string) *ds.EventGoals {
 type EventList []*Event
 
 func (events EventList) EventIDMapping(teamMappings map[string]string) EventIDMapping {
-	mapping := make(map[string]int64)
+	mapping := make(map[string]*Event)
 	for _, e := range events {
 		h := teamMappings[e.Home]
 		a := teamMappings[e.Away]
 		eventId := fmt.Sprintf("%s-%s-%s", e.StartTime.Format("20060102"), h, a)
-		mapping[eventId] = e.Id
+		mapping[eventId] = e
 	}
 
 	return mapping
 }
 
-type EventIDMapping map[string]int64
+type EventIDMapping map[string]*Event
 
-func (mapping EventIDMapping) Find(home, away string, startTime time.Time) int64 {
+func (mapping EventIDMapping) Find(home, away string, startTime time.Time) *Event {
 	eventId := fmt.Sprintf("%s-%s-%s", startTime.Format("20060102"), home, away)
 	return mapping[eventId]
 }
@@ -101,17 +101,22 @@ func (t *fetchGoalsTask) exec() error {
 
 	event_goals := make([]*ds.EventGoals, len(goal_events))
 	event_goals_keys := make([]*datastore.Key, len(goal_events))
+	updated_events := make([]*ds.Event, 0)
+	updated_events_keys := make([]*datastore.Key, 0)
+	visited := make(map[string]bool)
 	for i, ge := range goal_events {
 		home := teamMappings[ge.Home()]
 		away := teamMappings[ge.Away()]
-		if home == "" {
+		if home == "" && !visited[ge.Home()] {
 			t.context.Errorf("cannot find mapping for %s", ge.Home())
+			visited[ge.Home()] = true
 		}
-		if away == "" {
+		if away == "" && !visited[ge.Away()] {
 			t.context.Errorf("cannot find mapping for %s", ge.Away())
+			visited[ge.Away()] = true
 		}
 
-		eventId := eventMappings.Find(home, away, ge.StartTime())
+		event := eventMappings.Find(home, away, ge.StartTime())
 		existing := EventGoals(existing_goal_events).Find(ge.Home(), ge.Away())
 		if existing == nil {
 			e := &ds.EventGoals{
@@ -122,18 +127,35 @@ func (t *fetchGoalsTask) exec() error {
 				Away:      ge.Away(),
 				HomeGoals: ge.HomeGoals(),
 				AwayGoals: ge.AwayGoals(),
-				EventId:   eventId,
+			}
+			if event != nil {
+				e.EventId = event.Id
+				event.HGoals = e.HomeGoals
+				event.AGoals = e.AwayGoals
+				updated_events = append(updated_events, event.Event)
+				updated_events_keys = append(updated_events_keys, datastore.NewKey(t.context, "Event", "", event.Id, nil))
 			}
 
 			event_goals[i] = e
 			event_goals_keys[i] = datastore.NewIncompleteKey(t.context, "EventGoals", nil)
 		} else {
-			existing.EventId = eventId
+			if event != nil {
+				existing.EventId = event.Id
+				event.HGoals = existing.HomeGoals
+				event.AGoals = existing.AwayGoals
+				updated_events = append(updated_events, event.Event)
+				updated_events_keys = append(updated_events_keys, datastore.NewKey(t.context, "Event", "", event.Id, nil))
+			}
 			event_goals[i] = existing
 			event_goals_keys[i] = datastore.NewKey(t.context, "EventGoals", "", existing.Id, nil)
 		}
 	}
 
 	_, err = datastore.PutMulti(t.context, event_goals_keys, event_goals)
+	if err != nil {
+		return err
+	}
+
+	_, err = datastore.PutMulti(t.context, updated_events_keys, updated_events)
 	return err
 }
