@@ -108,11 +108,11 @@ func (t *fetchGoalsTask) exec() error {
 		home := teamMappings[ge.Home()]
 		away := teamMappings[ge.Away()]
 		if home == "" && !visited[ge.Home()] {
-			t.context.Errorf("cannot find mapping for %s", ge.Home())
+			t.context.Warningf("cannot find mapping for %s", ge.Home())
 			visited[ge.Home()] = true
 		}
 		if away == "" && !visited[ge.Away()] {
-			t.context.Errorf("cannot find mapping for %s", ge.Away())
+			t.context.Warningf("cannot find mapping for %s", ge.Away())
 			visited[ge.Away()] = true
 		}
 
