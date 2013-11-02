@@ -124,7 +124,7 @@ func fetchDetail(c appengine.Context, url string) <-chan *detailResult {
 			}
 		})
 
-		doc.Find("tbody tr.haction, tbody tr.gaction").Each(func(i int, s *gq.Selection) {
+		doc.Find("tbody tr.haction1, tbody tr.haction5, tbody tr.gaction1, tbody tr.gaction5, tbody tr.haction4, tbody tr.gaction4").Each(func(i int, s *gq.Selection) {
 			h := s.Find("td.home span").Text()
 			if h != "" {
 				hg := s.ChildrenFiltered("td.status").Text()
