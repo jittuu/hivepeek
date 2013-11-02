@@ -2,6 +2,9 @@ cron:
 - description: daily pull previous result job
   url: /cron/pull
   schedule: every day 04:00
+- description: daily pull previous goals detail job
+  url: /cron/fb24
+  schedule: every day 04:30
 - description: daily calc job
   url: /cron/calc
   schedule: every day 05:00
