@@ -196,8 +196,8 @@ func Fetch(c appengine.Context, league, season string) ([]*Event, error) {
 			result = append(result, e)
 		}
 		eventsLen += len(events)
-		pageNo = nextPage
 		c.Infof("fetched [%d] events for pageNo: %s", len(events), pageNo)
+		pageNo = nextPage
 		if pageNo == "0" {
 			break
 		}
