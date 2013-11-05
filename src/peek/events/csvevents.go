@@ -6,6 +6,17 @@ import (
 
 type CsvEvents []*Event
 
+func formatGoals(goals []int) string {
+	result := ""
+	for _, i := range goals {
+		result += strconv.Itoa(i) + ","
+	}
+	if result != "" {
+		return result[:len(result)-1]
+	}
+	return ""
+}
+
 func (events CsvEvents) Csv() [][]string {
 	header := []string{
 		"League",
@@ -15,6 +26,8 @@ func (events CsvEvents) Csv() [][]string {
 		"Away",
 		"HG",
 		"AG",
+		"HGoals",
+		"AGoals",
 		"Rating",
 		"AvgMatchOddsHome",
 		"AvgMatchOddsDraw",
@@ -47,6 +60,8 @@ func (events CsvEvents) Csv() [][]string {
 			e.Away,
 			strconv.Itoa(e.HGoal),
 			strconv.Itoa(e.AGoal),
+			formatGoals(e.HGoals),
+			formatGoals(e.AGoals),
 			strconv.FormatFloat(e.RatingDiff()/100, 'f', 2, 64),
 			strconv.FormatFloat(e.AvgOdds.Home, 'f', 2, 64),
 			strconv.FormatFloat(e.AvgOdds.Draw, 'f', 2, 64),
