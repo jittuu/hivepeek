@@ -32,6 +32,20 @@ func getPull(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	peek.RenderTemplate(w, nil, "templates/pull.html")
 }
 
+func fetchGoals(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	season := r.FormValue("season")
+	league := r.FormValue("league")
+
+	DelayFetchGoals.Call(c, league, season)
+
+	http.Redirect(w, r, "/events/qstats", http.StatusFound)
+	return
+}
+
+func getFetchGoals(c appengine.Context, w http.ResponseWriter, r *http.Request) {
+	peek.RenderTemplate(w, nil, "templates/fetchGoals.html")
+}
+
 func qstats(c appengine.Context, w http.ResponseWriter, r *http.Request) {
 	stats, err := taskqueue.QueueStats(c, []string{"default"}, 0)
 	if err != nil {

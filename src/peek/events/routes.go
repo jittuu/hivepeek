@@ -12,6 +12,8 @@ func init() {
 	r.Handle("/qstats", appstats.NewHandler(qstats)).Methods("GET")
 	r.Handle("/pull", appstats.NewHandler(getPull)).Methods("GET")
 	r.Handle("/pull", appstats.NewHandler(pull)).Methods("POST")
+	r.Handle("/fetchGoals", appstats.NewHandler(getFetchGoals)).Methods("GET")
+	r.Handle("/fetchGoals", appstats.NewHandler(fetchGoals)).Methods("POST")
 	r.Handle("/fetch", appstats.NewHandler(fetchView)).Methods("GET")
 	r.Handle("/fetch", appstats.NewHandler(fetch)).Methods("POST")
 	r.Handle("/calc", appstats.NewHandler(calcView)).Methods("GET")
