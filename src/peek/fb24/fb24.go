@@ -25,6 +25,7 @@ func (e *Event) Away() string {
 }
 
 func (e *Event) StartTime() time.Time {
+	// fb24 use Denmark timezone as base timezone
 	loc, _ := time.LoadLocation("Europe/Copenhagen")
 	dt, err := time.ParseInLocation("02/01/2006 15:04", e.fmtDate, loc)
 	if err != nil {
@@ -185,8 +186,8 @@ func Fetch(c appengine.Context, league, season string) ([]*Event, error) {
 	eventsLen := 0
 	result := make([]*Event, 0)
 	for {
-		c.Infof("fetching pageNo: %s", pageNo)
 		url := getUrl(league, season) + pageNo
+		c.Infof("fetching url: %s", url)
 		events, nextPage, err := fetchPage(c, url)
 		if err != nil {
 			return nil, err
