@@ -134,6 +134,8 @@ func (t *fetchGoalsTask) exec() error {
 				event.AGoals = e.AwayGoals
 				updated_events = append(updated_events, event.Event)
 				updated_events_keys = append(updated_events_keys, datastore.NewKey(t.context, "Event", "", event.Id, nil))
+			} else {
+				t.context.Warningf("cannot find event for %s vs %s", ge.Home(), ge.Away())
 			}
 
 			event_goals[i] = e
@@ -147,6 +149,8 @@ func (t *fetchGoalsTask) exec() error {
 				event.AGoals = existing.AwayGoals
 				updated_events = append(updated_events, event.Event)
 				updated_events_keys = append(updated_events_keys, datastore.NewKey(t.context, "Event", "", event.Id, nil))
+			} else {
+				t.context.Warningf("cannot find event for %s vs %s", ge.Home(), ge.Away())
 			}
 			event_goals[i] = existing
 			event_goals_keys[i] = datastore.NewKey(t.context, "EventGoals", "", existing.Id, nil)
