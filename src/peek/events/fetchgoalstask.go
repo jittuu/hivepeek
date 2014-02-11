@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"peek/ds"
 	"peek/fb24"
-	"time"
 )
 
 type EventGoals []*ds.EventGoals
@@ -28,7 +27,7 @@ func (events EventList) EventIDMapping(teamMappings map[string]string) EventIDMa
 	for _, e := range events {
 		h := teamMappings[e.Home]
 		a := teamMappings[e.Away]
-		eventId := fmt.Sprintf("%s-%s-%s", e.StartTime.Format("20060102"), h, a)
+		eventId := fmt.Sprintf("%s-%s", h, a)
 		mapping[eventId] = e
 	}
 
@@ -37,8 +36,8 @@ func (events EventList) EventIDMapping(teamMappings map[string]string) EventIDMa
 
 type EventIDMapping map[string]*Event
 
-func (mapping EventIDMapping) Find(home, away string, startTime time.Time) *Event {
-	eventId := fmt.Sprintf("%s-%s-%s", startTime.Format("20060102"), home, away)
+func (mapping EventIDMapping) Find(home, away string) *Event {
+	eventId := fmt.Sprintf("%s-%s", home, away)
 	return mapping[eventId]
 }
 
@@ -116,7 +115,7 @@ func (t *fetchGoalsTask) exec() error {
 			visited[ge.Away()] = true
 		}
 
-		event := eventMappings.Find(home, away, ge.StartTime())
+		event := eventMappings.Find(home, away)
 		existing := EventGoals(existing_goal_events).Find(ge.Home(), ge.Away())
 		if existing == nil {
 			e := &ds.EventGoals{
