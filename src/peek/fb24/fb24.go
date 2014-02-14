@@ -161,7 +161,8 @@ func fetchPage(c appengine.Context, url string) (events []*Event, nextPage strin
 		nextPage = nextPageUrl[len(nextPageUrl)-1:]
 	}
 
-	doc.Find("table.stat tr.status5 a.matchAction").Each(func(i int, s *gq.Selection) {
+	// status10 is added to handle event <02.04.2011>(St. Pauli	[0-2 ABD]	Schalke 04) at http://goo.gl/6EK87A
+	doc.Find("table.stat tr.status5 a.matchAction, table.stat tr.status10 a.matchAction").Each(func(i int, s *gq.Selection) {
 		link, _ := s.Attr("href")
 		link = "http://www.futbol24.com" + link
 
