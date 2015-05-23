@@ -21,10 +21,8 @@ type Client struct {
 	BaseURL string
 }
 
-var (
-	// ErrMissingAPIKey represents error when client makes request without APIKey
-	ErrMissingAPIKey = errors.New("APIKey is requried")
-)
+// ErrMissingAPIKey represents error when client makes request without APIKey
+var ErrMissingAPIKey = errors.New("APIKey is requried")
 
 // DemoClient creates client which access to Demo webservice
 func DemoClient(apiKey string) *Client {
