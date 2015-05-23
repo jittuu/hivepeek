@@ -5,10 +5,35 @@ import (
 	"time"
 )
 
+const (
+	// TimeNotStarted is the value "Not Started" for Match's Time field
+	TimeNotStarted = "Not Started"
+	// TimeHalftime is the value "Halftime" for Match's Time field
+	TimeHalftime = "Halftime"
+	// TimeFinished is the value "Finished" for Match's Time field
+	TimeFinished = "Finished"
+	// TimeFinishedAET is the value "Finished AET" for Match's Time field
+	TimeFinishedAET = "Finished AET"
+	// TimeFinishedAP is the value "Finished AP" for Match's Time field
+	TimeFinishedAP = "Finished AP"
+	// TimeWaitingForPenalty is the value "Waiting for Penalty" for Match's Time field
+	TimeWaitingForPenalty = "Waiting for Penalty"
+	// TimeCancelled is the value "Cancelled" for Match's Time field
+	TimeCancelled = "Cancelled"
+	// TimePostponed is the value "Postponed" for Match's Time field
+	TimePostponed = "Postponed"
+	// TimeAbandoned is the value "Abandoned" for Match's Time field
+	TimeAbandoned = "Abandoned"
+
+	iso8601Layout   = "2006-01-02T15:04:05-07:00"
+	dateparamLayout = "2006-01-02 15:04"
+)
+
 type xmlroot struct {
 	XMLName xml.Name `xml:"XMLSOCCER.COM"`
 	Leagues []League `xml:"League"`
 	Matches []Match  `xml:"Match"`
+	Teams   []Team   `xml:"Team"`
 }
 
 // League represents a soccer League
@@ -66,26 +91,17 @@ type Match struct {
 	Time string
 }
 
-const (
-	// TimeNotStarted is the value "Not Started" for Match's Time field
-	TimeNotStarted = "Not Started"
-	// TimeHalftime is the value "Halftime" for Match's Time field
-	TimeHalftime = "Halftime"
-	// TimeFinished is the value "Finished" for Match's Time field
-	TimeFinished = "Finished"
-	// TimeFinishedAET is the value "Finished AET" for Match's Time field
-	TimeFinishedAET = "Finished AET"
-	// TimeFinishedAP is the value "Finished AP" for Match's Time field
-	TimeFinishedAP = "Finished AP"
-	// TimeWaitingForPenalty is the value "Waiting for Penalty" for Match's Time field
-	TimeWaitingForPenalty = "Waiting for Penalty"
-	// TimeCancelled is the value "Cancelled" for Match's Time field
-	TimeCancelled = "Cancelled"
-	// TimePostponed is the value "Postponed" for Match's Time field
-	TimePostponed = "Postponed"
-	// TimeAbandoned is the value "Abandoned" for Match's Time field
-	TimeAbandoned = "Abandoned"
+// Team represents a soccer team
+type Team struct {
+	// ID is unique identifier of a Team
+	ID int `xml:"Team_Id"`
 
-	iso8601Layout   = "2006-01-02T15:04:05-07:00"
-	dateparamLayout = "2006-01-02 15:04"
-)
+	// Name is team's name
+	Name string
+
+	// Country is team's home country
+	Country string
+
+	// WikiLink is a http link to wikipedia if there is any
+	WikiLink string `xml:"WIKILink"`
+}

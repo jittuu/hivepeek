@@ -186,3 +186,51 @@ func testGetFixtures(t *testing.T, f func(*Client) ([]Match, error)) {
 		t.Log(matches)
 	}
 }
+
+func TestGetAllTeamsByLeagueAndSeason(t *testing.T) {
+	// arrange
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		data := `
+		<?xml version="1.0" encoding="utf-8"?>
+		<XMLSOCCER.COM>
+			<Team>
+			  <Team_Id>4</Team_Id>
+			  <Name>Fulham</Name>
+			  <Country>England</Country>
+			  <Stadium>Craven Cottage</Stadium>
+			  <HomePageURL>http://www.fulhamfc.com/</HomePageURL>
+			  <WIKILink>http://en.wikipedia.org/wiki/Fulham_F.C.</WIKILink>
+			</Team>
+		</XMLSOCCER.COM>
+				`
+		fmt.Fprintln(w, data)
+	}))
+	defer ts.Close()
+
+	// act
+	c := DemoClient("dummy-key")
+	c.testURL = ts.URL
+	teams, err := c.GetAllTeamsByLeagueAndSeason("3", "1415")
+
+	// assert
+	if err != nil {
+		t.Error(err)
+	}
+	if len(teams) != 1 {
+		t.Errorf("expected teams %d, got %d", 1, len(teams))
+	}
+
+	team := teams[0]
+	if team.ID != 4 {
+		t.Errorf("expected ID %d, got %d", 4, team.ID)
+	}
+	if team.Name != "Fulham" {
+		t.Errorf("expected name %q, got %q", "Fulham", team.Name)
+	}
+	if team.Country != "England" {
+		t.Errorf("expected country %q, got %q", "England", team.Country)
+	}
+	if team.WikiLink != "http://en.wikipedia.org/wiki/Fulham_F.C." {
+		t.Errorf("expected wiki-link %q, got %q", "http://en.wikipedia.org/wiki/Fulham_F.C.", team.WikiLink)
+	}
+}

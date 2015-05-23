@@ -11,7 +11,6 @@ import (
 
 // Client is to call webservice
 type Client struct {
-	client *http.Client
 	// it will be zero value ("") while not in testing
 	testURL string
 
@@ -69,8 +68,6 @@ func (c *Client) GetFixturesByDateInterval(startDate, endDate time.Time) ([]Matc
 }
 
 // GetFixturesByDateIntervalAndLeague returns all match fixtures for the given league between the given interval
-// The league parameter is a string and can either be the alphanumeric complete name, or the numeric ID.
-// For example, "English Premier League" or "1"
 func (c *Client) GetFixturesByDateIntervalAndLeague(startDate, endDate time.Time, league string) ([]Match, error) {
 	result := xmlroot{}
 	s, e := convertToCET(startDate, endDate)
@@ -89,16 +86,6 @@ func (c *Client) GetFixturesByDateIntervalAndLeague(startDate, endDate time.Time
 }
 
 // GetFixturesByLeagueAndSeason returns all match fixtures for the given league and season
-// The league parameter is a string and can either be the alphanumeric complete name, or the numeric ID.
-// For example, "English Premier League" or "1"
-// The season parameter is the last two digits of the beggining of the season-year appended by the last two digits of the following year.
-// For example,
-//  "1213" for the season of 2012-2013
-//  "0809" for the season of 2008-2009
-// The American "Major league" and the Swedish "Allsvenskan" is two examples of this,
-// as they start in the beginning of the year and end in the end of the year.
-// Despite of this, they too follow the same seasonDateString rules.
-// So the 2013 season of the American "Major League" will need the input: "1314"
 func (c *Client) GetFixturesByLeagueAndSeason(league, season string) ([]Match, error) {
 	result := xmlroot{}
 	err := c.invokeService("GetFixturesByLeagueAndSeason",
@@ -112,6 +99,22 @@ func (c *Client) GetFixturesByLeagueAndSeason(league, season string) ([]Match, e
 	}
 
 	return result.Matches, nil
+}
+
+// GetAllTeamsByLeagueAndSeason returns all teams for the given league and season
+func (c *Client) GetAllTeamsByLeagueAndSeason(league, season string) ([]Team, error) {
+	result := xmlroot{}
+	err := c.invokeService("GetAllTeamsByLeagueAndSeason",
+		url.Values{
+			"league":           {league},
+			"seasonDateString": {season},
+		},
+		&result)
+	if err != nil {
+		return nil, err
+	}
+
+	return result.Teams, nil
 }
 
 func (c *Client) invokeService(serviceName string, data url.Values, v interface{}) error {

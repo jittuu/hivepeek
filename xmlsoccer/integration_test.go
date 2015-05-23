@@ -60,6 +60,21 @@ func testIntegrationGetFixtures(t *testing.T, f func(*Client) ([]Match, error)) 
 	}
 }
 
+func TestIntegrationGetAllTeamsByLeagueAndSeason(t *testing.T) {
+	checkAPIKey(t)
+
+	c := DemoClient(*apiKeyPtr)
+	teams, err := c.GetAllTeamsByLeagueAndSeason("3", "1415")
+
+	if err != nil {
+		t.Error(err)
+	}
+
+	if len(teams) < 1 {
+		t.Errorf("expected more than one team, got %d", len(teams))
+	}
+}
+
 func checkAPIKey(t *testing.T) {
 	apiKey := *apiKeyPtr
 	if apiKey == "" {
