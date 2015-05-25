@@ -79,24 +79,24 @@ func TestGetAllLeagues(t *testing.T) {
 }
 
 func TestGetFixturesByDateInterval(t *testing.T) {
-	testGetFixtures(t, func(c *Client) ([]Match, error) {
+	testGetFixtures(t, func(c *Client) ([]*Match, error) {
 		return c.GetFixturesByDateInterval(time.Now().Add(-7*24*time.Hour), time.Now())
 	})
 }
 
 func TestGetFixturesByDateIntervalAndLeague(t *testing.T) {
-	testGetFixtures(t, func(c *Client) ([]Match, error) {
+	testGetFixtures(t, func(c *Client) ([]*Match, error) {
 		return c.GetFixturesByDateIntervalAndLeague(time.Now().Add(-7*24*time.Hour), time.Now(), "3")
 	})
 }
 
 func TestGetFixturesByLeagueAndSeason(t *testing.T) {
-	testGetFixtures(t, func(c *Client) ([]Match, error) {
+	testGetFixtures(t, func(c *Client) ([]*Match, error) {
 		return c.GetFixturesByLeagueAndSeason("3", "1415")
 	})
 }
 
-func testGetFixtures(t *testing.T, f func(*Client) ([]Match, error)) {
+func testGetFixtures(t *testing.T, f func(*Client) ([]*Match, error)) {
 	// arrange
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		data := `

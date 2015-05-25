@@ -30,10 +30,10 @@ const (
 )
 
 type xmlroot struct {
-	XMLName xml.Name `xml:"XMLSOCCER.COM"`
-	Leagues []League `xml:"League"`
-	Matches []Match  `xml:"Match"`
-	Teams   []Team   `xml:"Team"`
+	XMLName xml.Name  `xml:"XMLSOCCER.COM"`
+	Leagues []*League `xml:"League"`
+	Matches []*Match  `xml:"Match"`
+	Teams   []*Team   `xml:"Team"`
 }
 
 // League represents a soccer League

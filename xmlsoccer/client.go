@@ -41,7 +41,7 @@ func FullClient(apiKey string) *Client {
 }
 
 // GetAllLeagues returns all published leagues
-func (c *Client) GetAllLeagues() ([]League, error) {
+func (c *Client) GetAllLeagues() ([]*League, error) {
 	result := xmlroot{}
 	err := c.invokeService("GetAllLeagues", url.Values{}, &result)
 	if err != nil {
@@ -52,7 +52,7 @@ func (c *Client) GetAllLeagues() ([]League, error) {
 }
 
 // GetFixturesByDateInterval returns all match fixtures between the given interval
-func (c *Client) GetFixturesByDateInterval(startDate, endDate time.Time) ([]Match, error) {
+func (c *Client) GetFixturesByDateInterval(startDate, endDate time.Time) ([]*Match, error) {
 	result := xmlroot{}
 	s, e := convertToCET(startDate, endDate)
 	err := c.invokeService("GetFixturesByDateInterval",
@@ -66,7 +66,7 @@ func (c *Client) GetFixturesByDateInterval(startDate, endDate time.Time) ([]Matc
 }
 
 // GetFixturesByDateIntervalAndLeague returns all match fixtures for the given league between the given interval
-func (c *Client) GetFixturesByDateIntervalAndLeague(startDate, endDate time.Time, league string) ([]Match, error) {
+func (c *Client) GetFixturesByDateIntervalAndLeague(startDate, endDate time.Time, league string) ([]*Match, error) {
 	result := xmlroot{}
 	s, e := convertToCET(startDate, endDate)
 	err := c.invokeService("GetFixturesByDateIntervalAndLeague",
@@ -84,7 +84,7 @@ func (c *Client) GetFixturesByDateIntervalAndLeague(startDate, endDate time.Time
 }
 
 // GetFixturesByLeagueAndSeason returns all match fixtures for the given league and season
-func (c *Client) GetFixturesByLeagueAndSeason(league, season string) ([]Match, error) {
+func (c *Client) GetFixturesByLeagueAndSeason(league, season string) ([]*Match, error) {
 	result := xmlroot{}
 	err := c.invokeService("GetFixturesByLeagueAndSeason",
 		url.Values{
@@ -100,7 +100,7 @@ func (c *Client) GetFixturesByLeagueAndSeason(league, season string) ([]Match, e
 }
 
 // GetAllTeamsByLeagueAndSeason returns all teams for the given league and season
-func (c *Client) GetAllTeamsByLeagueAndSeason(league, season string) ([]Team, error) {
+func (c *Client) GetAllTeamsByLeagueAndSeason(league, season string) ([]*Team, error) {
 	result := xmlroot{}
 	err := c.invokeService("GetAllTeamsByLeagueAndSeason",
 		url.Values{
