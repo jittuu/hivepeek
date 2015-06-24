@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/jittuu/hivepeek/xmlsoccer"
+	"github.com/jittuu/xmlsoccer"
 	"github.com/mjibson/goon"
 
 	"appengine"

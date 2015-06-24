@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	xs "github.com/jittuu/hivepeek/xmlsoccer"
+	xs "github.com/jittuu/xmlsoccer"
 	"github.com/mjibson/goon"
 
 	"appengine/aetest"
