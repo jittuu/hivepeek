@@ -1,0 +1,12 @@
+application: hivepeek
+version: 1
+module: backoffice
+runtime: go
+api_version: go1
+
+env_variables:
+  XMLSOCCER_API_KEY: 'PUT_YOUR_APIKEY'
+
+handlers:
+- url: /.*
+  script: _go_app
