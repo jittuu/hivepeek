@@ -71,20 +71,20 @@ func delayFetchMatchesByLeague(c context.Context, league int, season string) err
 
 		if !found {
 			newMatches = append(newMatches, &internal.Match{
-				StartDate:        m.StartDate,
-				Round:            m.Round,
-				Status:           m.Time,
-				HomeTeamID:       m.HomeTeamID,
-				HomeTeamName:     m.HomeTeamName,
-				HomeGoals:        m.HomeGoals,
-				AwayTeamID:       m.AwayTeamID,
-				AwayTeamName:     m.AwayTeamName,
-				AwayGoals:        m.AwayGoals,
-				ProviderID:       m.ID,
-				ProviderName:     "xmlsoccer",
-				LeagueProviderID: league,
-				LeagueName:       leagueName,
-				Season:           season,
+				StartDate:          m.StartDate,
+				Round:              m.Round,
+				Status:             m.Time,
+				HomeTeamProviderID: m.HomeTeamID,
+				HomeTeamName:       m.HomeTeamName,
+				HomeGoals:          m.HomeGoals,
+				AwayTeamProviderID: m.AwayTeamID,
+				AwayTeamName:       m.AwayTeamName,
+				AwayGoals:          m.AwayGoals,
+				ProviderID:         m.ID,
+				ProviderName:       "xmlsoccer",
+				LeagueProviderID:   league,
+				LeagueName:         leagueName,
+				Season:             season,
 			})
 		}
 	}
