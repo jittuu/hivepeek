@@ -19,18 +19,21 @@ type League struct {
 }
 
 type Match struct {
-	ID           int64 `datastore:"-"`
-	StartDate    time.Time
-	Round        int
-	Status       string
-	HomeTeamName string
-	HomeTeamID   int
-	HomeGoals    int `datastore:",noindex"`
-	AwayTeamName string
-	AwayTeamID   int
-	AwayGoals    int `datastore:",noindex"`
-	ProviderID   int
-	ProviderName string
+	ID               int64 `datastore:"-"`
+	StartDate        time.Time
+	Round            int
+	Status           string
+	HomeTeamName     string
+	HomeTeamID       int
+	HomeGoals        int `datastore:",noindex"`
+	AwayTeamName     string
+	AwayTeamID       int
+	AwayGoals        int `datastore:",noindex"`
+	ProviderID       int
+	ProviderName     string
+	LeagueProviderID int
+	LeagueName       string
+	Season           string
 }
 
 type Team struct {
