@@ -3,20 +3,18 @@ package backoffice
 import (
 	"fmt"
 	"net/http"
-	"os"
-
-	"google.golang.org/appengine/urlfetch"
 
 	"golang.org/x/net/context"
 
 	"github.com/gorilla/mux"
 	"github.com/jittuu/hivepeek/internal"
-	"github.com/jittuu/xmlsoccer"
 )
 
 func init() {
 	r := mux.NewRouter()
 	r.StrictSlash(true)
+	r.Handle("/", internal.Handler(handler))
+
 	lgs := r.PathPrefix("/leagues").Subrouter()
 	lgs.Handle("/", internal.Handler(AllLeagues)).Methods("GET")
 	lgs.Handle("/", internal.Handler(FetchLeagues)).Methods("POST")
@@ -33,14 +31,6 @@ func init() {
 }
 
 func handler(c context.Context, w http.ResponseWriter, r *http.Request) error {
-	fmt.Fprint(w, "Hello, world!")
+	fmt.Fprint(w, "Hello")
 	return nil
-}
-
-func Client(c context.Context) *xmlsoccer.Client {
-	return &xmlsoccer.Client{
-		BaseURL: xmlsoccer.DemoURL,
-		APIKey:  os.Getenv("XMLSOCCER_API_KEY"),
-		Client:  urlfetch.Client(c),
-	}
 }

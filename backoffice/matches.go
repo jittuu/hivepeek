@@ -58,15 +58,8 @@ func delayFetchMatchesByLeague(c context.Context, league int, season string) err
 		return err
 	}
 
+	leagueName := GetLeagueNameByProviderID(db, league)
 	var newMatches []*internal.Match
-	xleague, err := db.GetLeagueByProviderID(league)
-	if err != nil {
-		return err
-	}
-	leagueName := ""
-	if xleague != nil {
-		leagueName = xleague.Name
-	}
 	for _, m := range mths {
 		found := false
 		for _, xm := range existingMatches {
