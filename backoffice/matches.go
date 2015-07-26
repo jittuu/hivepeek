@@ -51,10 +51,22 @@ func delayFetchMatchesByLeague(c context.Context, league int, season string) err
 		return err
 	}
 
-	var newMatches []*internal.Match
 	db := &internal.DSContext{c}
 	existingMatches, err := db.GetAllMatchesByLeagueAndSeason(league, season)
 	log.Infof(c, "have %d existing matches in datastore for league: %d, season: %s", len(existingMatches), league, season)
+	if err != nil {
+		return err
+	}
+
+	var newMatches []*internal.Match
+	xleague, err := db.GetLeagueByProviderID(league)
+	if err != nil {
+		return err
+	}
+	leagueName := ""
+	if xleague != nil {
+		leagueName = xleague.Name
+	}
 	for _, m := range mths {
 		found := false
 		for _, xm := range existingMatches {
@@ -78,8 +90,8 @@ func delayFetchMatchesByLeague(c context.Context, league int, season string) err
 				ProviderID:       m.ID,
 				ProviderName:     "xmlsoccer",
 				LeagueProviderID: league,
+				LeagueName:       leagueName,
 				Season:           season,
-				// TODO: need to provide league name
 			})
 		}
 	}
