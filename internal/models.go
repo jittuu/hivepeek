@@ -37,9 +37,13 @@ type Match struct {
 }
 
 type Team struct {
-	ID           int64 `datastore:"-"`
-	Name         string
-	Country      string
-	ProviderID   int
-	ProviderName string
+	ID               int64 `datastore:"-"`
+	Name             string
+	WikiLink         string
+	Country          string
+	ProviderID       int
+	ProviderName     string
+	LeagueProviderID int
+	LeagueName       string
+	Season           string
 }

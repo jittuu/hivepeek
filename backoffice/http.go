@@ -21,6 +21,10 @@ func init() {
 	lgs.Handle("/", internal.Handler(AllLeagues)).Methods("GET")
 	lgs.Handle("/", internal.Handler(FetchLeagues)).Methods("POST")
 
+	teams := r.PathPrefix("/teams").Subrouter()
+	teams.Handle("/{league}/{season}", internal.Handler(AllTeamsByLeague)).Methods("GET")
+	teams.Handle("/{league}/{season}", internal.Handler(FetchTeamsByLeague)).Methods("POST")
+
 	mths := r.PathPrefix("/matches").Subrouter()
 	mths.Handle("/{league}/{season}", internal.Handler(AllMatchesByLeague)).Methods("GET")
 	mths.Handle("/{league}/{season}", internal.Handler(FetchMatchesByLeague)).Methods("POST")

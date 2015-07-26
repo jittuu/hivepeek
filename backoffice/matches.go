@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	delayFetchMatchesByLeagueFunc = delay.Func("fetch-matches", delayFetchMatchesByLeague)
+	delayFetchMatchesByLeagueFunc = delay.Func("fetch-matches-by-league", delayFetchMatchesByLeague)
 )
 
 func AllMatchesByLeague(c context.Context, w http.ResponseWriter, r *http.Request) error {
@@ -25,7 +25,6 @@ func AllMatchesByLeague(c context.Context, w http.ResponseWriter, r *http.Reques
 	}
 	s := vars["season"]
 	db := &internal.DSContext{c}
-	log.Infof(c, "get matches by league: %d, season: %s", l, s)
 	matches, err := db.GetAllMatchesByLeagueAndSeason(l, s)
 	if err != nil {
 		return err

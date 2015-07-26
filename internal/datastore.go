@@ -45,6 +45,44 @@ func (c *DSContext) PutMultiLeagues(leagues []*League) error {
 	return nil
 }
 
+func (c *DSContext) GetAllTeamsByLeagueAndSeason(leagueID int, season string) ([]*Team, error) {
+	var teams []*Team
+	q := datastore.NewQuery(KindTeam).
+		Filter("LeagueProviderID =", leagueID).
+		Filter("Season =", season)
+	keys, err := q.GetAll(c.C, &teams)
+	if err != nil {
+		return nil, err
+	}
+
+	for i := range teams {
+		teams[i].ID = keys[i].IntID()
+	}
+
+	return teams, nil
+}
+
+func (c *DSContext) PutMultiTeams(teams []*Team) error {
+	keys := make([]*datastore.Key, len(teams))
+	for i, m := range teams {
+		if m.ID == 0 {
+			keys[i] = datastore.NewIncompleteKey(c.C, KindTeam, nil)
+		} else {
+			keys[i] = datastore.NewKey(c.C, KindTeam, "", m.ID, nil)
+		}
+	}
+
+	keys, err := datastore.PutMulti(c.C, keys, teams)
+	if err != nil {
+		return err
+	}
+	for i := range teams {
+		teams[i].ID = keys[i].IntID()
+	}
+
+	return nil
+}
+
 func (c *DSContext) GetAllMatchesByLeagueAndSeason(leagueID int, season string) ([]*Match, error) {
 	q := datastore.NewQuery(KindMatch).
 		Filter("LeagueProviderID =", leagueID).
