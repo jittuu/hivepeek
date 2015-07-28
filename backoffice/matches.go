@@ -52,6 +52,11 @@ func delayFetchMatchesByLeague(c context.Context, league int, season string) err
 	}
 
 	db := &internal.DSContext{c}
+	err = FillTeamsCache(db)
+	if err != nil {
+		return err
+	}
+
 	existingMatches, err := db.GetAllMatchesByLeagueAndSeason(league, season)
 	log.Infof(c, "have %d existing matches in datastore for league: %d, season: %s", len(existingMatches), league, season)
 	if err != nil {
@@ -70,13 +75,18 @@ func delayFetchMatchesByLeague(c context.Context, league int, season string) err
 		}
 
 		if !found {
+			hId := GetTeamIDbyProviderID(c, m.HomeTeamID)
+			aId := GetTeamIDbyProviderID(c, m.AwayTeamID)
+
 			newMatches = append(newMatches, &internal.Match{
 				StartDate:          m.StartDate,
 				Round:              m.Round,
 				Status:             m.Time,
+				HomeTeamID:         hId,
 				HomeTeamProviderID: m.HomeTeamID,
 				HomeTeamName:       m.HomeTeamName,
 				HomeGoals:          m.HomeGoals,
+				AwayTeamID:         aId,
 				AwayTeamProviderID: m.AwayTeamID,
 				AwayTeamName:       m.AwayTeamName,
 				AwayGoals:          m.AwayGoals,

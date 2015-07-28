@@ -24,9 +24,11 @@ type Match struct {
 	Round              int
 	Status             string
 	HomeTeamName       string
+	HomeTeamID         int64
 	HomeTeamProviderID int
 	HomeGoals          int `datastore:",noindex"`
 	AwayTeamName       string
+	AwayTeamID         int64
 	AwayTeamProviderID int
 	AwayGoals          int `datastore:",noindex"`
 	ProviderID         int
