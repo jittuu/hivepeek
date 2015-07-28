@@ -10,3 +10,7 @@ env_variables:
 handlers:
 - url: /.*
   script: _go_app
+
+- url: /_ah/queue/go/delay
+  login: admin
+  script: _go_app
